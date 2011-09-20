@@ -1,4 +1,3 @@
-
 #!/usr/bin/python
 
 # mcexplore.py, by similardilemma
@@ -6,6 +5,10 @@
 # http://creativecommons.org/licenses/by-sa/3.0/
 
 # This script requires a copy of twoolie's nbt.py, found here: https://github.com/twoolie/NBT
+
+# Changelog:
+#  1.0: 03/04/2011  Initial release
+#  1.1: 09/20/2011  Fix stripes without trees throughout generated maps
 
 import os
 import sys
@@ -18,7 +21,7 @@ import nbt
 
 def main():
     # handle command line options and args
-    version = "%prog 1.0"
+    version = "%prog 1.1"
     usage = "usage: %prog [options] xsize zsize"
     description = "Uses a Minecraft server to generate square land of a specified size, measured in chunks (16x16 blocks) or regions (32x32 chunks). If only xsize is specified, it is used for both xsize and zsize. Either run this from the folder containing your minecraft server, or specify the path to your minecraft folder with the -p option."
     parser = optparse.OptionParser(version=version, usage=usage, description=description)
@@ -85,17 +88,19 @@ def main():
     print "Snapped origin to %d, %d" % (options.xorigin, options.zorigin)
     
     # loop through a grid of spawn points within the given range, starting and stopping the server for each one
-    # note that the server generated spawn point is 400x400 meters (25x25 chunks)
-    xsize = int(args[0]) * multiplier - 400
-    zsize = int(args[1]) * multiplier - 400
-    print "Size of area to map in meters: %d, %d" % (xsize + 400, zsize + 400)
-    xiterations = int(math.ceil(xsize / 400.0) + 1)
-    ziterations = int(math.ceil(zsize / 400.0) + 1)
+    # note that the server generated spawn point is 400x400 meters (25x25 chunks), but it does not generate
+    # trees or snow outside of a 384x384 meter box.
+    spawnsize = 384.0
+    xsize = int(args[0]) * multiplier - spawnsize - 16
+    zsize = int(args[1]) * multiplier - spawnsize - 16
+    print "Size of area to map in meters: %d, %d" % (xsize + spawnsize, zsize + spawnsize)
+    xiterations = int(math.ceil(xsize / spawnsize) + 1)
+    ziterations = int(math.ceil(zsize / spawnsize) + 1)
     for xcount in range(0, xiterations):
-        x = options.xorigin - xsize / 2 + xcount * 400
+        x = options.xorigin - xsize / 2 + xcount * spawnsize
         if x > options.xorigin + xsize / 2: x = options.xorigin + xsize / 2
         for zcount in range(0, ziterations):
-            z = options.zorigin - zsize / 2 + zcount * 400
+            z = options.zorigin - zsize / 2 + zcount * spawnsize
             if z > options.zorigin + zsize / 2: z = options.zorigin + zsize / 2
             print "Setting spawn to %d, %d" % (x, z)
             setSpawn(level, (x, 64, z))
