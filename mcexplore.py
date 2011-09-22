@@ -134,7 +134,6 @@ def runMinecraft(path, command, verbose=False):
     mc.stdin.write("save-all\r\n")
     time.sleep(10)
     mc.stdin.write("stop\r\n")
-    time.sleep(10)
     mc.wait()
 
 def parseConfig(filename):
