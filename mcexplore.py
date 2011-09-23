@@ -10,6 +10,7 @@
 #  1.0: 03/04/2011  Initial release
 #  1.1: 09/20/2011  Fix stripes without trees throughout generated maps
 #  1.2: 09/22/2011  Quick fix for 1.9 maps not generating correctly (thanks contre!)
+#  1.3: 09/23/2011  Better fix for 1.9: wait for the string "Done" to appear in stdout (thanks ojrac)
 
 import os
 import sys
@@ -124,16 +125,25 @@ def setSpawn(level, coords):
     (f["Data"]["SpawnX"].value, f["Data"]["SpawnY"].value, f["Data"]["SpawnZ"].value) = coords
     f.write_file(level)
 
+def wait_for_string(str_, stream, verbose=False):
+    """
+    Waits for an occurance of str_ in stream. May never return! Using a
+    timeout would only work if the stream is non-blocking, and that
+    means extra work to buffer in case the str_ gets split up
+    """
+    while True:
+        line = stream.readline()
+        if verbose:
+            sys.stdout.write(line)
+        if str_ in line:
+            return
+
 def runMinecraft(path, command, verbose=False):
     """Runs a minecraft server, and stops it as soon as possible."""
-    if verbose:
-        outstream = sys.stdout
-    else:
-        outstream = subprocess.PIPE
-    mc = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=outstream, stderr=subprocess.STDOUT, cwd=path)
-    time.sleep(30)
+    mc = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, cwd=path)
+    wait_for_string("Done", mc.stdout, verbose)
     mc.stdin.write("save-all\r\n")
-    time.sleep(10)
+    wait_for_string("Save complete", mc.stdout, verbose)
     mc.stdin.write("stop\r\n")
     mc.wait()
 
