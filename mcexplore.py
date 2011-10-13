@@ -10,6 +10,7 @@
 #  1.0: 03/04/2011  Initial release
 #  1.1: 09/20/2011  Fix stripes without trees throughout generated maps
 #  1.2: 09/22/2011  Quick fix for 1.9 maps not generating correctly (thanks contre!)
+#  1.3: 10/13/2011  No longer need the 1.9 fix, as the chunk-saving bug is gone
 
 import os
 import sys
@@ -131,9 +132,7 @@ def runMinecraft(path, command, verbose=False):
     else:
         outstream = subprocess.PIPE
     mc = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=outstream, stderr=subprocess.STDOUT, cwd=path)
-    time.sleep(30)
     mc.stdin.write("save-all\r\n")
-    time.sleep(10)
     mc.stdin.write("stop\r\n")
     mc.wait()
 
