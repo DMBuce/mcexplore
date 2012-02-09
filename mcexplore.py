@@ -30,7 +30,7 @@ def main():
     parser = optparse.OptionParser(version=version, usage=usage, description=description)
     parser.add_option("-v", "--verbose", action="store_true", dest="verbose", default=False, help="When enabled, the Minecraft server output is shown on the console")
     parser.add_option("-p", "--path", dest="path", default=".", help="sets the current directory to use when running the server")
-    parser.add_option("-c", "--command", dest="command", default=("java", "-jar", "minecraft_server.jar", "nogui"), help="Specifies the command used to start the server. Defaults to 'java -jar minecraft_server.jar nogui'")
+    parser.add_option("-c", "--command", dest="command", default="java -jar minecraft_server.jar nogui", help="Specifies the command used to start the server. Defaults to 'java -jar minecraft_server.jar nogui'")
     parser.add_option("-x", dest="xorigin", type="int", help="Set the X offset to generate land around. Defaults to the server's spawn point")
     parser.add_option("-z", dest="zorigin", type="int", help="Set the Z offset to generate land around. Defaults to the server's spawn point")
     parser.add_option("-r", "--regions", action="store_true", dest="regions", default=False, help="When enabled, measure in regions instead of chunks.")
@@ -131,7 +131,7 @@ def runMinecraft(path, command, verbose=False):
         outstream = sys.stdout
     else:
         outstream = subprocess.PIPE
-    mc = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=outstream, stderr=subprocess.STDOUT, cwd=path)
+    mc = subprocess.Popen(command.split(), stdin=subprocess.PIPE, stdout=outstream, stderr=subprocess.STDOUT, cwd=path)
     mc.stdin.write("save-all\r\n")
     mc.stdin.write("stop\r\n")
     mc.wait()
