@@ -11,6 +11,7 @@
 #  1.1: 09/20/2011  Fix stripes without trees throughout generated maps
 #  1.2: 09/22/2011  Quick fix for 1.9 maps not generating correctly (thanks contre!)
 #  1.3: 10/13/2011  No longer need the 1.9 fix, as the chunk-saving bug is gone
+#  1.4: 02/10/2012  Fix an issue with the -c flag not working (thanks https://github.com/DMBuce)
 
 import os
 import sys
@@ -24,13 +25,13 @@ import nbt
 
 def main():
     # handle command line options and args
-    version = "%prog 1.3"
+    version = "%prog 1.4"
     usage = "usage: %prog [options] xsize zsize"
     description = "Uses a Minecraft server to generate square land of a specified size, measured in chunks (16x16 blocks) or regions (32x32 chunks). If only xsize is specified, it is used for both xsize and zsize. Either run this from the folder containing your minecraft server, or specify the path to your minecraft folder with the -p option."
     parser = optparse.OptionParser(version=version, usage=usage, description=description)
     parser.add_option("-v", "--verbose", action="store_true", dest="verbose", default=False, help="When enabled, the Minecraft server output is shown on the console")
     parser.add_option("-p", "--path", dest="path", default=".", help="sets the current directory to use when running the server")
-    parser.add_option("-c", "--command", dest="command", default=("java", "-jar", "minecraft_server.jar", "nogui"), help="Specifies the command used to start the server. Defaults to 'java -jar minecraft_server.jar nogui'")
+    parser.add_option("-c", "--command", dest="command", default="java -jar minecraft_server.jar nogui", help="Specifies the command used to start the server. Defaults to 'java -jar minecraft_server.jar nogui'")
     parser.add_option("-x", dest="xorigin", type="int", help="Set the X offset to generate land around. Defaults to the server's spawn point")
     parser.add_option("-z", dest="zorigin", type="int", help="Set the Z offset to generate land around. Defaults to the server's spawn point")
     parser.add_option("-r", "--regions", action="store_true", dest="regions", default=False, help="When enabled, measure in regions instead of chunks.")
@@ -131,7 +132,7 @@ def runMinecraft(path, command, verbose=False):
         outstream = sys.stdout
     else:
         outstream = subprocess.PIPE
-    mc = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=outstream, stderr=subprocess.STDOUT, cwd=path)
+    mc = subprocess.Popen(command.split(), stdin=subprocess.PIPE, stdout=outstream, stderr=subprocess.STDOUT, cwd=path)
     mc.stdin.write("save-all\r\n")
     mc.stdin.write("stop\r\n")
     mc.wait()
