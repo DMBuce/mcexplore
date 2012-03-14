@@ -58,6 +58,11 @@ def main():
             print "Minecraft maps start with a 25x25 chunk square. You must specify sizes larger than this."
             sys.exit(1)
 
+    # do a dry run if the server hasn't started at least once
+    if not os.path.isfile(os.path.join(options.path, 'server.properties')):
+        print "Generating world and server.properties"
+        runMinecraft(options.path, options.command, options.verbose)
+
     # parse the server.properties file to get the world name
     properties = parseConfig(os.path.join(options.path, 'server.properties'))
     world = os.path.join(options.path, properties['level-name'])
