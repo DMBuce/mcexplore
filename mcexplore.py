@@ -11,6 +11,7 @@
 #  1.1: 09/20/2011  Fix stripes without trees throughout generated maps
 #  1.2: 09/22/2011  Quick fix for 1.9 maps not generating correctly (thanks contre!)
 #  1.3: 10/13/2011  No longer need the 1.9 fix, as the chunk-saving bug is gone
+#  1.4: 02/10/2012  Fix an issue with the -c flag not working (thanks https://github.com/DMBuce)
 
 import os
 import sys
@@ -24,7 +25,7 @@ import nbt
 
 def main():
     # handle command line options and args
-    version = "%prog 1.3"
+    version = "%prog 1.4"
     usage = "usage: %prog [options] xsize zsize"
     description = "Uses a Minecraft server to generate square land of a specified size, measured in chunks (16x16 blocks) or regions (32x32 chunks). If only xsize is specified, it is used for both xsize and zsize. Either run this from the folder containing your minecraft server, or specify the path to your minecraft folder with the -p option."
     parser = optparse.OptionParser(version=version, usage=usage, description=description)
