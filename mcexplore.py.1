@@ -1,0 +1,95 @@
+'\" t
+.\"     Title: mcexplore.py
+.\"    Author: [see the "Authors" section]
+.\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
+.\"      Date: 05/08/2012
+.\"    Manual: \ \&
+.\"    Source: \ \&
+.\"  Language: English
+.\"
+.TH "MCEXPLORE\&.PY" "1" "05/08/2012" "\ \&" "\ \&"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+mcexplore.py \- Use a Minecraft server to generate a square of land\&.
+.SH "SYNOPSIS"
+.sp
+\fImcexplore\&.py\fR [options] <xsize> [zsize]
+.SH "DESCRIPTION"
+.sp
+mcexplore\&.py uses a Minecraft server to generate square land of a specified size, measured in chunks (16x16 blocks) or regions (32x32 chunks)\&. If only \fIxsize\fR is specified, it is used for both \fIxsize\fR and \fIzsize\fR\&.
+.SH "OPTIONS"
+.PP
+\fB\-\-version\fR
+.RS 4
+Show version number and exit\&.
+.RE
+.PP
+\fB\-h, \-\-help\fR
+.RS 4
+Show this help message and exit\&.
+.RE
+.PP
+\fB\-v, \-\-verbose\fR
+.RS 4
+When enabled, the Minecraft server output is shown on the console\&.
+.RE
+.PP
+\fB\-p, \-\-path\fR <path>
+.RS 4
+Sets the current directory to use when running the server\&. Defaults to the current working directory (\&.)\&.
+.RE
+.PP
+\fB\-c, \-\-command\fR <command>
+.RS 4
+Specifies the
+\fIcommand\fR
+used to start the server\&. Defaults to \*(Aqjava \-jar minecraft_server\&.jar nogui\*(Aq\&.
+.RE
+.PP
+\fB\-x\fR <xorigin>
+.RS 4
+Set the X offset to generate land around\&. Defaults to the server\(cqs spawn point\&.
+.RE
+.PP
+\fB\-z\fR <zorigin>
+.RS 4
+Set the Z offset to generate land around\&. Defaults to the server\(cqs spawn point\&.
+.RE
+.PP
+\fB\-r, \-\-regions\fR
+.RS 4
+When enabled, measure in regions instead of chunks\&.
+.RE
+.SH "AUTHORS"
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+similardilemma
+https://github\&.com/similardilemma
+.RE
+.sp
+To see a full list of contributors, use git shortlog \-s in the mcexplore\&.py git repository located at https://gist\&.github\&.com/854679\&.
