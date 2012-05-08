@@ -1,0 +1,68 @@
+/////
+mcexplore.py.1.txt
+
+AsciiDoc source for mcexplore.py man page
+
+to generate a man page from this document, run
+a2x --no-xmllint -d manpage -f manpage --asciidoc-opts="-d manpage" mcexplore.py.1.txt
+/////
+
+mcexplore.py(1)
+===============
+
+Name
+----
+mcexplore.py - Use a Minecraft server to generate a square of land.
+
+Synopsis
+--------
+'mcexplore.py' [options] <xsize> [zsize]
+
+Description
+-----------
+mcexplore.py uses a Minecraft server to generate square land of a specified size, measured
+in chunks (16x16 blocks) or regions (32x32 chunks). If only 'xsize' is
+specified, it is used for both 'xsize' and 'zsize'.
+
+Options
+-------
+
+*--version*::
+	Show version number and exit.
+
+*-h, --help*::
+	Show this help message and exit.
+
+*-v, --verbose*::
+	When enabled, the Minecraft server output is shown on the console.
+
+*-p, --path* <path>::
+	Sets the current directory to use when running the server. Defaults to the
+	current working directory (`.`).
+
+*-c, --command* <command>::
+	Specifies the 'command' used to start the server. Defaults to
+	\'java -jar minecraft_server.jar nogui'.
+
+*-x* <xorigin>::
+	Set the X offset to generate land around. Defaults to the server's spawn
+	point.
+
+*-z* <zorigin>::
+	Set the Z offset to generate land around. Defaults to the server's spawn
+	point.
+
+*-r, --regions*::
+	When enabled, measure in regions instead of chunks.
+
+Authors
+-------
+
+* similardilemma <https://github.com/similardilemma>
+
+To see a full list of contributors, use `git shortlog -s` in the mcexplore.py
+git repository located at <https://gist.github.com/854679>.
+
+/////
+vim: set syntax=asciidoc:
+/////
