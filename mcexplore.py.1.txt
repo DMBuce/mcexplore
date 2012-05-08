@@ -37,8 +37,8 @@ Options
 	When enabled, the Minecraft server output is shown on the console.
 
 *-p, --path* <path>::
-	Sets the current directory to use when running the server. Defaults to the
-	current working directory (`.`).
+	Sets the 'path' of the working directory to use when running the server.
+	Defaults to the current directory (`.`).
 
 *-c, --command* <command>::
 	Specifies the 'command' used to start the server. Defaults to
