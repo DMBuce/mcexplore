@@ -28,7 +28,7 @@ def main():
     # handle command line options and args
     version = "%prog 1.5"
     usage = "usage: %prog [options] xsize [zsize]"
-    description = "Uses a Minecraft server to generate square land of a specified size, measured in chunks (16x16 blocks) or regions (32x32 chunks). If only xsize is specified, it is used for both xsize and zsize. Either run this from the folder containing your minecraft server, or specify the path to your minecraft folder with the -p option."
+    description = "Uses a Minecraft server to generate square land of a specified size, measured in chunks (16x16 blocks) or regions (32x32 chunks). xsize and zsize are the extent of the rectangle in the x and z direction, respectively, and must be greater than 25 chunks. If only xsize is specified, it is used for both xsize and zsize. Either run this from the folder containing your minecraft server, or specify the path to your minecraft folder with the -p option."
     parser = optparse.OptionParser(version=version, usage=usage, description=description)
     parser.add_option("-v", "--verbose", action="store_true", dest="verbose", default=False, help="When enabled, the Minecraft server output is shown on the console.")
     parser.add_option("-p", "--path", dest="path", default=".", help="Sets the path of the working directory to use when running the server. Defaults to the current directory (.).")

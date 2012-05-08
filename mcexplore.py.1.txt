@@ -20,8 +20,10 @@ Synopsis
 
 Description
 -----------
-mcexplore.py uses a Minecraft server to generate square land of a specified size, measured
-in chunks (16x16 blocks) or regions (32x32 chunks). If only 'xsize' is
+mcexplore.py uses a Minecraft server to generate square land of a specified
+size, measured in chunks (16x16 blocks) or regions (32x32 chunks). 'xsize' and
+'zsize' are the extent of the rectangle in the x and z direction,
+respectively, and must be greater than 25 chunks. If only 'xsize' is
 specified, it is used for both 'xsize' and 'zsize'.
 
 Options
