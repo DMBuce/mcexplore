@@ -63,7 +63,7 @@ Authors
 * similardilemma <https://github.com/similardilemma>
 
 To see a full list of contributors, use `git shortlog -s` in the mcexplore.py
-git repository located at <https://gist.github.com/854679>.
+git repository located at <https://github.com/DMBuce/mcexplore>.
 
 /////
 vim: set syntax=asciidoc:
