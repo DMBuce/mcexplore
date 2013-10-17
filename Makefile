@@ -60,7 +60,7 @@ install: $(INSTALL_DIRS) doc $(DESTDIR)$(bindir)/mcexplore $(DESTDIR)$(man1dir)/
 $(DESTDIR)$(bindir)/mcexplore: mcexplore.py
 	$(INSTALL) -m755 $< $@
 
-$(DESTDIR)$(man1dir)/mcexplore.1: mcexplore.py.1
+$(DESTDIR)$(man1dir)/mcexplore.1: mcexplore.1
 	$(INSTALL_DATA) $< $@
 
 $(INSTALL_DIRS):
