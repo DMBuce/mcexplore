@@ -12,7 +12,7 @@ import subprocess
 import math
 import time
 
-import nbt
+from nbt import nbt
 
 def main():
     # handle command line options and args
