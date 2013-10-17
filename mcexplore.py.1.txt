@@ -1,26 +1,26 @@
 /////
-mcexplore.py.1.txt
+mcexplore.1.txt
 
-AsciiDoc source for mcexplore.py man page
+AsciiDoc source for mcexplore man page
 
 to generate a man page from this document, run
-a2x --no-xmllint -d manpage -f manpage --asciidoc-opts="-d manpage" mcexplore.py.1.txt
+a2x --no-xmllint -d manpage -f manpage --asciidoc-opts="-d manpage" mcexplore.1.txt
 /////
 
-mcexplore.py(1)
-===============
+mcexplore(1)
+============
 
 Name
 ----
-mcexplore.py - Use a Minecraft server to generate a square of land.
+mcexplore - Use a Minecraft server to generate a square of land.
 
 Synopsis
 --------
-'mcexplore.py' [options] <xsize> [zsize]
+'mcexplore' [options] <xsize> [zsize]
 
 Description
 -----------
-mcexplore.py uses a Minecraft server to generate square land of a specified
+mcexplore uses a Minecraft server to generate square land of a specified
 size, measured in chunks (16x16 blocks) or regions (32x32 chunks). 'xsize' and
 'zsize' are the extent of the rectangle in the x and z direction,
 respectively, and must be greater than 25 chunks. If only 'xsize' is
@@ -62,7 +62,7 @@ Authors
 
 * similardilemma <https://github.com/similardilemma>
 
-To see a full list of contributors, use `git shortlog -s` in the mcexplore.py
+To see a full list of contributors, use `git shortlog -s` in the mcexplore
 git repository located at <https://github.com/DMBuce/mcexplore>.
 
 /////
