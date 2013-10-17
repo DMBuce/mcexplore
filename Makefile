@@ -49,12 +49,12 @@ INSTALL_DIRS  = $(DESTDIR)$(bindir) $(DESTDIR)$(man1dir)
 all: doc
 
 .PHONY: doc
-doc: mcexplore.py.1
+doc: mcexplore.1
 
 .PHONY: install
 install: $(INSTALL_DIRS) doc $(DESTDIR)$(bindir)/mcexplore $(DESTDIR)$(man1dir)/mcexplore.1
 
-%.py.1: %.py.1.txt
+%.1: %.1.txt
 	a2x --no-xmllint -d manpage -f manpage --asciidoc-opts="-d manpage" $<
 
 $(DESTDIR)$(bindir)/mcexplore: mcexplore.py
