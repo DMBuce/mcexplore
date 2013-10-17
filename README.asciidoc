@@ -1,0 +1,18 @@
+Use a Minecraft server to generate a square of land.
+
+Overview
+--------
+mcexplore.py uses a Minecraft server to generate square land of a specified
+size, measured in chunks (16x16 blocks) or regions (32x32 chunks).
+
+Documentation
+-------------
+
+Basic documentation can be found in these files:
+
+* LICENSE - Terms and conditions
+* README  - This document
+
+/////
+vim: set syntax=asciidoc ts=4 sw=4 noet:
+/////
