@@ -5,6 +5,11 @@ Overview
 mcexplore.py uses a Minecraft server to generate square land of a specified
 size, measured in chunks (16x16 blocks) or regions (32x32 chunks).
 
+Requirements
+------------
+This script requires Python 2 and https://github.com/twoolie/NBT[Twoolie's NBT
+library].
+
 Documentation
 -------------
 
@@ -12,6 +17,9 @@ Basic documentation can be found in these files:
 
 * LICENSE - Terms and conditions
 * README  - This document
+
+The changelog can be viewed by running `git tag -l -n100` in the git
+repository.
 
 /////
 vim: set syntax=asciidoc ts=4 sw=4 noet:

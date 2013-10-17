@@ -4,16 +4,6 @@
 # Released under the Creative Commons Attribution-ShareAlike license:
 # http://creativecommons.org/licenses/by-sa/3.0/
 
-# This script requires a copy of twoolie's nbt.py, found here: https://github.com/twoolie/NBT
-
-# Changelog:
-#  1.0: 03/04/2011  Initial release
-#  1.1: 09/20/2011  Fix stripes without trees throughout generated maps
-#  1.2: 09/22/2011  Quick fix for 1.9 maps not generating correctly (thanks contre!)
-#  1.3: 10/13/2011  No longer need the 1.9 fix, as the chunk-saving bug is gone
-#  1.4: 02/10/2012  Fix an issue with the -c flag not working (thanks https://github.com/DMBuce)
-#  1.5: 03/15/2012  Do a dry run to create server.properties if it doesn't exist (thanks again https://github.com/DMBuce)
-
 import os
 import sys
 import shutil
