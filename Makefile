@@ -54,6 +54,9 @@ doc: mcexplore.1
 .PHONY: install
 install: $(INSTALL_DIRS) doc $(DESTDIR)$(bindir)/mcexplore $(DESTDIR)$(man1dir)/mcexplore.1
 
+.PHONY: html
+html: mcexplore.1.html
+
 %.1: %.1.txt
 	a2x --no-xmllint -d manpage -f manpage --asciidoc-opts="-d manpage" $<
 
@@ -65,4 +68,7 @@ $(DESTDIR)$(man1dir)/mcexplore.1: mcexplore.1
 
 $(INSTALL_DIRS):
 	$(INSTALL) -d $@
+
+%.html: %.txt
+	asciidoc -a toc -a icons -a max-width=960px $<
 
