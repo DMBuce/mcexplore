@@ -13,7 +13,11 @@ library].
 Documentation
 -------------
 
-Basic documentation can be found in these files:
+The manual page for mcexplore is kept in AsciiDoc format in mcexplore.1.txt.
+You can view it in a text editor, with `make doc; man ./mcexplore.1`, or at 
+https://dmbuce.github.io/mcexplore/mcexplore.1.html .
+
+Project documentation can be found in these files:
 
 * LICENSE - Terms and conditions
 * README  - This document
