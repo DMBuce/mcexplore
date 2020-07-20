@@ -30,7 +30,7 @@ def main():
     
     # exit with an error if no arguments were passed
     if len(args) == 0:
-        print "You must specify a size. Use -h for help."
+        print("You must specify a size. Use -h for help.")
         sys.exit(1)
 
     # if only an xsize was specified, use it for the zsize as well
@@ -41,17 +41,17 @@ def main():
     if options.regions:
         multiplier = 512
         if int(args[0]) < 2 or int(args[1]) < 2:
-            print "When specifying sizes in regions, you must specify an area 2x2 or larger."
+            print("When specifying sizes in regions, you must specify an area 2x2 or larger.")
             sys.exit(1)
     else:
         multiplier = 16
         if int(args[0]) <= 25 or int(args[1]) <= 25:
-            print "Minecraft maps start with a 25x25 chunk square. You must specify sizes larger than this."
+            print("Minecraft maps start with a 25x25 chunk square. You must specify sizes larger than this.")
             sys.exit(1)
 
     # do a dry run if the server hasn't started at least once
     if not os.path.isfile(os.path.join(options.path, 'server.properties')):
-        print "Generating world and server.properties"
+        print("Generating world and server.properties")
         runMinecraft(options.path, options.command, options.verbose)
 
     # parse the server.properties file to get the world name
@@ -61,12 +61,12 @@ def main():
     # make a backup of the level.dat file for later restoration
     level = os.path.join(options.path, world, "level.dat")
     levelbak = os.path.join(options.path, world, "level.dat.explorebackup")
-    
+     
     # don't do anything if a backup already exists. Since we always clean up our backups, a leftover backup means something went wrong last time.
     if os.path.isfile(levelbak):
-        print "A backup of your level.dat file exists. This means that you've run this program before and it failed, was interrupted, or is still running. You will need to restore or delete this backup before trying again."
+        print("A backup of your level.dat file exists. This means that you've run this program before and it failed, was interrupted, or is still running. You will need to restore or delete this backup before trying again.")
         sys.exit(1)
-    
+     
     # make our backup
     shutil.copyfile(level, levelbak)
 
@@ -85,7 +85,7 @@ def main():
     zoffset = (int(args[1]) % 2) * (multiplier / 2)
     options.xorigin = int(round(float(options.xorigin + xoffset) / float(multiplier))) * multiplier - xoffset
     options.zorigin = int(round(float(options.zorigin + zoffset) / float(multiplier))) * multiplier - zoffset
-    print "Snapped origin to %d, %d" % (options.xorigin, options.zorigin)
+    print("Snapped origin to %d, %d" % (options.xorigin, options.zorigin))
     
     # loop through a grid of spawn points within the given range, starting and stopping the server for each one
     # note that the server generated spawn point is 400x400 meters (25x25 chunks), but it does not generate
@@ -93,7 +93,7 @@ def main():
     spawnsize = 384.0
     xsize = int(args[0]) * multiplier - spawnsize - 16
     zsize = int(args[1]) * multiplier - spawnsize - 16
-    print "Size of area to map in meters: %d, %d" % (xsize + spawnsize, zsize + spawnsize)
+    print("Size of area to map in meters: %d, %d" % (xsize + spawnsize, zsize + spawnsize))
     xiterations = int(math.ceil(xsize / spawnsize) + 1)
     ziterations = int(math.ceil(zsize / spawnsize) + 1)
     for xcount in range(0, xiterations):
@@ -102,12 +102,12 @@ def main():
         for zcount in range(0, ziterations):
             z = options.zorigin - zsize / 2 + zcount * spawnsize
             if z > options.zorigin + zsize / 2: z = options.zorigin + zsize / 2
-            print "Setting spawn to %d, %d" % (x, z)
-            setSpawn(level, (x, 64, z))
+            print("Setting spawn to %d, %d" % (x, z))
+            setSpawn(level, (int(x), 64, int(z)))
             runMinecraft(options.path, options.command, options.verbose)
 
     # restore the old spawn point
-    print "Restoring original spawn of %d, %d, %d" % originalspawn
+    print("Restoring original spawn of %d, %d, %d" % originalspawn)
     os.remove(level)
     os.rename(levelbak, level)
 
@@ -128,9 +128,8 @@ def runMinecraft(path, command, verbose=False):
         outstream = sys.stdout
     else:
         outstream = subprocess.PIPE
-    mc = subprocess.Popen(command.split(), stdin=subprocess.PIPE, stdout=outstream, stderr=subprocess.STDOUT, cwd=path)
-    mc.stdin.write("save-all\r\n")
-    mc.stdin.write("stop\r\n")
+    mc = subprocess.Popen(command.split(), cwd=path, stdin=subprocess.PIPE, universal_newlines=True)
+    mc.communicate("/stop\n")
     mc.wait()
 
 def parseConfig(filename):
