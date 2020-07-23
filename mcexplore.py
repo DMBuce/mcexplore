@@ -14,6 +14,12 @@ import time
 
 from nbt import nbt
 
+# https://stackoverflow.com/a/11270665
+try:
+    from subprocess import DEVNULL
+except ImportError:
+    DEVNULL = open(os.devnull, 'wb')
+
 def main():
     # handle command line options and args
     version = "%prog 1.5"
@@ -127,8 +133,8 @@ def runMinecraft(path, command, verbose=False):
     if verbose:
         outstream = sys.stdout
     else:
-        outstream = subprocess.PIPE
-    mc = subprocess.Popen(command.split(), cwd=path, stdin=subprocess.PIPE, universal_newlines=True)
+        outstream = DEVNULL
+    mc = subprocess.Popen(command.split(), cwd=path, stdin=subprocess.PIPE, stdout=outstream, universal_newlines=True)
     mc.communicate("/stop\n")
     mc.wait()
 
