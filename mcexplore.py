@@ -131,7 +131,8 @@ def runMinecraft(path, command, verbose=False):
     mc = subprocess.Popen(command.split(), stdin=subprocess.PIPE, stdout=outstream, stderr=subprocess.STDOUT, cwd=path)
     mc.communicate(input=b'save-all\r\nstop\r\n')
     #mc.communicate(input=b'stop\r\n')
-    mc.wait()
+    return_code = mc.wait()
+    assert return_code == 0
 
 def parseConfig(filename):
     """Parses a server.properties file. Accepts the path to the file as an argument, and returns the key/value pairs."""
