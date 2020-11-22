@@ -26,6 +26,7 @@ def main():
     parser.add_option("-x", dest="xorigin", type="int", help="Set the X offset to generate land around. Defaults to the server's spawn point.")
     parser.add_option("-z", dest="zorigin", type="int", help="Set the Z offset to generate land around. Defaults to the server's spawn point.")
     parser.add_option("-r", "--regions", action="store_true", dest="regions", default=False, help="When enabled, measure in regions instead of chunks.")
+    parser.add_option("--spawnsize", dest="spawnsize", default=368, help="The number of blocks to move the spawn point on every server restart. Higher values may miss the population stage of some chunks at the border. This is the length of the side of a square centered around the spawn point. Should be a multiple of 16. Common values: 368, 384, 400. Default: 368")
     (options, args) = parser.parse_args()
     
     # exit with an error if no arguments were passed
@@ -89,8 +90,9 @@ def main():
     
     # loop through a grid of spawn points within the given range, starting and stopping the server for each one
     # note that the server generated spawn point is 400x400 meters (25x25 chunks), but it does not generate
-    # trees or snow outside of a 384x384 meter box.
-    spawnsize = 384.0
+    # trees or snow outside of a 384x384 meter box, and starting from minecraft 1.16 it does not generate biomes
+    # outside of a 368x368 box
+    spawnsize = options.spawnsize
     xsize = int(args[0]) * multiplier - spawnsize - 16
     zsize = int(args[1]) * multiplier - spawnsize - 16
     print("Size of area to map in meters: %d, %d" % (xsize + spawnsize, zsize + spawnsize))
