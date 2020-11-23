@@ -183,8 +183,9 @@ is also used as the value for <zsize>.
 
         # loop through a grid of spawn points within the given range, starting and stopping the server for each one
         # note that the server generated spawn point is 400x400 meters (25x25 chunks), but it does not generate
-        # trees or snow outside of a 384x384 meter box.
-        spawnsize = 384.0
+        # trees or snow outside of a 384x384 meter box, and starting from minecraft 1.16 it does not generate biomes
+        # outside of a 368x368 box
+        spawnsize = 368
         # normalize xsize and zsize so that they're measured in blocks
         xsize = xsize * multiplier - spawnsize - 16
         zsize = zsize * multiplier - spawnsize - 16
