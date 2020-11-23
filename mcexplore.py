@@ -23,9 +23,11 @@ except ImportError:
     DEVNULL = open(os.devnull, 'wb')
 
 def msg(message="", file=sys.stdout):
+    """Prints an info message"""
     print(message, file=file)
 
 def err(message=""):
+    """Prints an error message"""
     msg(message, file=sys.stderr)
 
 # make sure nbt module is installed
@@ -38,8 +40,8 @@ except ImportError:
     err("\thttps://github.com/dmbuce/mcexplore#install")
     sys.exit(1)
 
-# cleanup handler
 def cleanup(signum, frame):
+    """Cleanup handler"""
     # run atexit handlers
     sys.exit(1)
 
