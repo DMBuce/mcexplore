@@ -23,15 +23,42 @@ except ImportError:
 def main():
     # handle command line options and args
     version = "%prog 1.5"
-    usage = "usage: %prog [options] xsize [zsize]"
-    description = "Uses a Minecraft server to generate square land of a specified size, measured in chunks (16x16 blocks) or regions (32x32 chunks). xsize and zsize are the extent of the rectangle in the x and z direction, respectively, and must be greater than 25 chunks. If only xsize is specified, it is used for both xsize and zsize. Either run this from the folder containing your minecraft server, or specify the path to your minecraft folder with the -p option."
+    usage = "Usage: %prog [options] <xsize> [zsize]"
+    description = """\
+Uses a Minecraft server to pregenerate a square section of the world.
+<xsize> and <zsize> are in units of chunks (16x16 blocks) by default,
+and must be greater than 25 chunks. If only <xsize> is specified, it
+is also used as the value for <zsize>.
+"""
     parser = optparse.OptionParser(version=version, usage=usage, description=description)
-    parser.add_option("-v", "--verbose", action="store_true", dest="verbose", default=False, help="When enabled, the Minecraft server output is shown on the console.")
-    parser.add_option("-p", "--path", dest="path", default=".", help="Sets the path of the working directory to use when running the server. Defaults to the current directory (.).")
-    parser.add_option("-c", "--command", dest="command", default="java -jar minecraft_server.jar nogui", help="Specifies the command used to start the server. Defaults to 'java -jar minecraft_server.jar nogui'.")
-    parser.add_option("-x", dest="xorigin", type="int", help="Set the X offset to generate land around. Defaults to the server's spawn point.")
-    parser.add_option("-z", dest="zorigin", type="int", help="Set the Z offset to generate land around. Defaults to the server's spawn point.")
-    parser.add_option("-r", "--regions", action="store_true", dest="regions", default=False, help="When enabled, measure in regions instead of chunks.")
+    parser.add_option(
+        "-v", "--verbose", dest="verbose", default=False,
+        action="store_true",
+        help="Show minecraft server output."
+    )
+    parser.add_option(
+        "-p", "--path", dest="path", default=".",
+        help="The working directory to use when running the server. Default: The current directory."
+    )
+    parser.add_option(
+        "-c", "--command", dest="command", default="java -jar minecraft_server.jar nogui",
+        help="The command used to start the server. Default: 'java -jar minecraft_server.jar nogui'."
+    )
+    parser.add_option(
+        "-x", dest="xorigin", default=None,
+        type="int",
+        help="The X offset to generate land around. Default: The server's spawn point."
+    )
+    parser.add_option(
+        "-z", dest="zorigin", default=None,
+        type="int",
+        help="The Z offset to generate land around. Default: the server's spawn point."
+    )
+    parser.add_option(
+        "-r", "--regions", dest="regions", default=False,
+        action="store_true",
+        help="Use units of regions (32x32 chunks) instead of chunks for <xsize> and <zsize>"
+    )
     (options, args) = parser.parse_args()
 
     # exit with an error if no arguments were passed
