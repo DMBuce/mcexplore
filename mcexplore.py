@@ -14,8 +14,6 @@ import subprocess
 import math
 import time
 
-from nbt import nbt
-
 # https://stackoverflow.com/a/11270665
 try:
     from subprocess import DEVNULL
@@ -87,6 +85,18 @@ is also used as the value for <zsize>.
     # parse args
     xsize = int(args[0])
     zsize = int(args[1]) if len(args) > 1 else int(args[0])
+
+    # sanity checks
+    #
+    # make sure nbt module is installed
+    try:
+        from nbt import nbt
+    except ImportError:
+        err("Couldn't import module: nbt")
+        err()
+        err("Make sure you followed the install procedure:")
+        err("\thttps://github.com/dmbuce/mcexplore#install")
+        sys.exit(1)
 
     # exit with an error if a size smaller than the initial spawn was specified
     if options.regions:
