@@ -83,15 +83,15 @@ is also used as the value for <zsize>.
     # validate args
     if len(args) == 0:
         parser.print_usage(file=sys.stderr)
-        err("{}: error: argument xsize: no size given".format(prog))
+        err("{}: error: argument xsize: no size given" % prog)
         sys.exit(1)
     elif not args[0].isdigit():
         parser.print_usage(file=sys.stderr)
-        err("{}: error: argument xsize: invalid integer value: '{}'".format(prog, args[0].replace("'", "\\'")))
+        err("{}: error: argument xsize: invalid integer value: '{}'" % (prog, args[0].replace("'", "\\'")))
         sys.exit(1)
     elif len(args) > 1 and not args[1].isdigit():
         parser.print_usage(file=sys.stderr)
-        err("{}: error: argument zsize: invalid integer value: '{}'".format(prog, args[0].replace("'", "\\'")))
+        err("{}: error: argument zsize: invalid integer value: '{}'" % (prog, args[0].replace("'", "\\'")))
         sys.exit(1)
 
     # parse args
@@ -105,30 +105,30 @@ is also used as the value for <zsize>.
     #
     # make sure sizes are reasonable
     if options.regions and xsize < 2:
-        err("xsize too small: {}".format(xsize))
+        err("xsize too small: {}" % xsize)
         err()
         err("The area to generate must be 2x2 regions or larger.")
         sys.exit(1)
     elif options.regions and zsize < 2:
-        err("zsize too small: {}".format(zsize))
+        err("zsize too small: {}" % zsize)
         err()
         err("The area to generate must be 2x2 regions or larger.")
         sys.exit(1)
     # permanently loaded spawn area is 25x25 chunks
     elif xsize <= 25:
-        err("xsize too small: {}".format(xsize))
+        err("xsize too small: {}" % xsize)
         err()
         err("The area to generate must be 26x26 chunks or larger.")
         sys.exit(1)
     elif zsize <= 25:
-        err("zsize too small: {}".format(zsize))
+        err("zsize too small: {}" % zsize)
         err()
         err("The area to generate must be 26x26 chunks or larger.")
         sys.exit(1)
 
     # do a dry run if the server hasn't started at least once
     if not os.path.isfile(os.path.join(options.path, 'server.properties')):
-        print("Generating world and server.properties")
+        msg("Generating world and server.properties")
         runMinecraft(options.path, options.command, options.verbose)
 
     # use server.properties to figure out path to world folder
@@ -141,15 +141,17 @@ is also used as the value for <zsize>.
 
     # bail if a backup already exists
     if os.path.isfile(levelbak):
-        print("A backup of your level.dat file exists. This means that you've run this program before and it failed, was interrupted, or is still running. You will need to restore or delete this backup before trying again.")
+        err("Backup of level.dat already exists: {}" % levelbak)
+        err()
+        err("Either {} failed, was interrupted or is still running. Restore or delete the backup and try again." % prog)
         sys.exit(1)
+
+    # get original spawn point
+    originalspawn = getSpawn(level)
 
     try:
         # back up level.dat
         shutil.copyfile(level, levelbak)
-
-        # get original spawn point
-        originalspawn = getSpawn(level)
 
         # figure out origin
         if options.xorigin is None: options.xorigin = originalspawn[0]
@@ -163,7 +165,7 @@ is also used as the value for <zsize>.
         zoffset = (zsize % 2) * (multiplier / 2)
         options.xorigin = int(round(float(options.xorigin + xoffset) / float(multiplier))) * multiplier - xoffset
         options.zorigin = int(round(float(options.zorigin + zoffset) / float(multiplier))) * multiplier - zoffset
-        print("Snapped origin to %d, %d" % (options.xorigin, options.zorigin))
+        msg("Snapped origin to %d, %d" % (options.xorigin, options.zorigin))
 
         # loop through a grid of spawn points within the given range, starting and stopping the server for each one
         # note that the server generated spawn point is 400x400 meters (25x25 chunks), but it does not generate
@@ -172,7 +174,7 @@ is also used as the value for <zsize>.
         # normalize xsize and zsize so that they're measured in blocks
         xsize = xsize * multiplier - spawnsize - 16
         zsize = zsize * multiplier - spawnsize - 16
-        print("Size of area to map in meters: %d, %d" % (xsize + spawnsize, zsize + spawnsize))
+        msg("Size of area to generate: %dx%d blocks" % (xsize + spawnsize, zsize + spawnsize))
         xiterations = int(math.ceil(xsize / spawnsize) + 1)
         ziterations = int(math.ceil(zsize / spawnsize) + 1)
         for xcount in range(0, xiterations):
@@ -181,13 +183,12 @@ is also used as the value for <zsize>.
             for zcount in range(0, ziterations):
                 z = options.zorigin - zsize / 2 + zcount * spawnsize
                 if z > options.zorigin + zsize / 2: z = options.zorigin + zsize / 2
-                print("Setting spawn to %d, %d" % (x, z))
+                msg("Setting spawn to %d, %d" % (x, z))
                 setSpawn(level, (int(x), 64, int(z)))
                 runMinecraft(options.path, options.command, options.verbose)
-
-        # restore the old spawn point
-        print("Restoring original spawn of %d, %d, %d" % originalspawn)
     finally:
+        # restore the old spawn point
+        msg("Restoring original spawn of %d, %d, %d" % originalspawn)
         #os.remove(level)
         os.rename(levelbak, level)
 
@@ -212,7 +213,7 @@ def runMinecraft(path, command, verbose=False):
     mc.communicate("/stop\n")
     if mc.wait() != 0:
         err()
-        err("Command exited with failure status: `{}`".format(command.replace('`', '\\`')))
+        err("Command exited with failure status: `{}`" % command.replace('`', '\\`'))
         sys.exit(1)
 
 def parseConfig(filename):
