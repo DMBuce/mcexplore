@@ -102,18 +102,28 @@ is also used as the value for <zsize>.
         err("Make sure you followed the install procedure:")
         err("\thttps://github.com/dmbuce/mcexplore#install")
         sys.exit(1)
-
-    # exit with an error if a size smaller than the initial spawn was specified
-    if options.regions:
-        multiplier = 512
-        if xsize < 2 or zsize < 2:
-            print("When specifying sizes in regions, you must specify an area 2x2 or larger.")
-            sys.exit(1)
-    else:
-        multiplier = 16
-        if xsize <= 25 or zsize <= 25:
-            print("Minecraft maps start with a 25x25 chunk square. You must specify sizes larger than this.")
-            sys.exit(1)
+    # make sure sizes are reasonable
+    if options.regions and xsize < 2:
+        err("xsize too small: {}".format(xsize))
+        err()
+        err("The area to generate must be 2x2 regions or larger.")
+        sys.exit(1)
+    elif options.regions and zsize < 2:
+        err("zsize too small: {}".format(zsize))
+        err()
+        err("The area to generate must be 2x2 regions or larger.")
+        sys.exit(1)
+    # permanently loaded spawn area is 25x25 chunks
+    elif xsize <= 25:
+        err("xsize too small: {}".format(xsize))
+        err()
+        err("The area to generate must be 26x26 chunks or larger.")
+        sys.exit(1)
+    elif zsize <= 25:
+        err("zsize too small: {}".format(zsize))
+        err()
+        err("The area to generate must be 26x26 chunks or larger.")
+        sys.exit(1)
 
     # do a dry run if the server hasn't started at least once
     if not os.path.isfile(os.path.join(options.path, 'server.properties')):
