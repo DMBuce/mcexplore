@@ -14,6 +14,7 @@ import subprocess
 import math
 import time
 import signal
+import atexit
 
 # https://stackoverflow.com/a/11270665
 try:
@@ -37,7 +38,9 @@ except ImportError:
     err("\thttps://github.com/dmbuce/mcexplore#install")
     sys.exit(1)
 
-def sighandler(signum, frame):
+# cleanup handler
+def cleanup(signum, frame):
+    # run atexit handlers
     sys.exit(1)
 
 def main():
@@ -52,9 +55,9 @@ and must be greater than 25 chunks. If only <xsize> is specified, it
 is also used as the value for <zsize>.
 """
 
-    # set signal handler
-    signal.signal(signal.SIGTERM, sighandler)
-    signal.signal(signal.SIGINT, sighandler)
+    # set signal handlers
+    signal.signal(signal.SIGINT   , cleanup)
+    signal.signal(signal.SIGTERM  , cleanup)
 
     # parse options
     parser = optparse.OptionParser(version=version, usage=usage, description=description)
@@ -163,49 +166,50 @@ is also used as the value for <zsize>.
     # get original spawn point
     originalspawn = getSpawn(level)
 
-    try:
-        # back up level.dat
-        shutil.copyfile(level, levelbak)
-
-        # figure out origin
-        if options.xorigin is None: options.xorigin = originalspawn[0]
-        if options.zorigin is None: options.zorigin = originalspawn[2]
-
-        # move the origin to the nearest valid center point
-        # this will be a region or chunk center, the center of a region or chunk border,
-        # or the corner of a region or chunk, depending on the specified dimensions
-        # this is not strictly necessary when measuring in chunks, but doesn't hurt
-        xoffset = (xsize % 2) * (multiplier / 2)
-        zoffset = (zsize % 2) * (multiplier / 2)
-        options.xorigin = int(round(float(options.xorigin + xoffset) / float(multiplier))) * multiplier - xoffset
-        options.zorigin = int(round(float(options.zorigin + zoffset) / float(multiplier))) * multiplier - zoffset
-        msg("Snapped origin to %d, %d" % (options.xorigin, options.zorigin))
-
-        # loop through a grid of spawn points within the given range, starting and stopping the server for each one
-        # note that the server generated spawn point is 400x400 meters (25x25 chunks), but it does not generate
-        # trees or snow outside of a 384x384 meter box, and starting from minecraft 1.16 it does not generate biomes
-        # outside of a 368x368 box
-        spawnsize = 368
-        # normalize xsize and zsize so that they're measured in blocks
-        xsize = xsize * multiplier - spawnsize - 16
-        zsize = zsize * multiplier - spawnsize - 16
-        msg("Size of area to generate: %dx%d blocks" % (xsize + spawnsize, zsize + spawnsize))
-        xiterations = int(math.ceil(xsize / spawnsize) + 1)
-        ziterations = int(math.ceil(zsize / spawnsize) + 1)
-        for xcount in range(0, xiterations):
-            x = options.xorigin - xsize / 2 + xcount * spawnsize
-            if x > options.xorigin + xsize / 2: x = options.xorigin + xsize / 2
-            for zcount in range(0, ziterations):
-                z = options.zorigin - zsize / 2 + zcount * spawnsize
-                if z > options.zorigin + zsize / 2: z = options.zorigin + zsize / 2
-                msg("Setting spawn to %d, %d" % (x, z))
-                setSpawn(level, (int(x), 64, int(z)))
-                runMinecraft(options.path, options.command, options.verbose)
-    finally:
+    # back up level.dat
+    def restoreLevel(level, levelbak):
         # restore the old spawn point
-        msg("Restoring original spawn of %d, %d, %d" % originalspawn)
         #os.remove(level)
         os.rename(levelbak, level)
+        msg("Restored %s from %s" % (level, levelbak))
+    msg("Backing up %s to %s" % (level, levelbak))
+    atexit.register(restoreLevel, level=level, levelbak=levelbak)
+    shutil.copyfile(level, levelbak)
+
+    # figure out origin
+    if options.xorigin is None: options.xorigin = originalspawn[0]
+    if options.zorigin is None: options.zorigin = originalspawn[2]
+
+    # move the origin to the nearest valid center point
+    # this will be a region or chunk center, the center of a region or chunk border,
+    # or the corner of a region or chunk, depending on the specified dimensions
+    # this is not strictly necessary when measuring in chunks, but doesn't hurt
+    xoffset = (xsize % 2) * (multiplier / 2)
+    zoffset = (zsize % 2) * (multiplier / 2)
+    options.xorigin = int(round(float(options.xorigin + xoffset) / float(multiplier))) * multiplier - xoffset
+    options.zorigin = int(round(float(options.zorigin + zoffset) / float(multiplier))) * multiplier - zoffset
+    msg("Snapped origin to %d, %d" % (options.xorigin, options.zorigin))
+
+    # loop through a grid of spawn points within the given range, starting and stopping the server for each one
+    # note that the server generated spawn point is 400x400 meters (25x25 chunks), but it does not generate
+    # trees or snow outside of a 384x384 meter box, and starting from minecraft 1.16 it does not generate biomes
+    # outside of a 368x368 box
+    spawnsize = 368
+    # normalize xsize and zsize so that they're measured in blocks
+    xsize = xsize * multiplier - spawnsize - 16
+    zsize = zsize * multiplier - spawnsize - 16
+    msg("Size of area to generate: %dx%d blocks" % (xsize + spawnsize, zsize + spawnsize))
+    xiterations = int(math.ceil(xsize / spawnsize) + 1)
+    ziterations = int(math.ceil(zsize / spawnsize) + 1)
+    for xcount in range(0, xiterations):
+        x = options.xorigin - xsize / 2 + xcount * spawnsize
+        if x > options.xorigin + xsize / 2: x = options.xorigin + xsize / 2
+        for zcount in range(0, ziterations):
+            z = options.zorigin - zsize / 2 + zcount * spawnsize
+            if z > options.zorigin + zsize / 2: z = options.zorigin + zsize / 2
+            msg("Setting spawn to %d, %d" % (x, z))
+            setSpawn(level, (int(x), 64, int(z)))
+            runMinecraft(options.path, options.command, options.verbose)
 
 def getSpawn(level):
     """Gets the spawn point from a given level.dat file"""
