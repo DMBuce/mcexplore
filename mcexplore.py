@@ -181,18 +181,18 @@ is also used as the value for <zsize>.
     # trees or snow outside of a 384x384 meter box, and starting from minecraft 1.16 it does not generate biomes
     # outside of a 368x368 box
     spawnsize = 368
-    # normalize xsize and zsize so that they're measured in blocks
-    xsize = xsize * multiplier - spawnsize - 16
-    zsize = zsize * multiplier - spawnsize - 16
-    msg("Size of area to generate: %dx%d blocks" % (xsize + spawnsize, zsize + spawnsize))
-    xiterations = int(math.ceil(xsize / spawnsize) + 1)
-    ziterations = int(math.ceil(zsize / spawnsize) + 1)
+    # compute the number of blocks in xsize and zsize
+    xblocks = xsize * multiplier - spawnsize - 16
+    zblocks = zsize * multiplier - spawnsize - 16
+    msg("Size of area to generate: %dx%d blocks" % (xblocks + spawnsize, zblocks + spawnsize))
+    xiterations = int(math.ceil(xblocks / spawnsize) + 1)
+    ziterations = int(math.ceil(zblocks / spawnsize) + 1)
     for xcount in range(0, xiterations):
-        x = options.xorigin - xsize / 2 + xcount * spawnsize
-        if x > options.xorigin + xsize / 2: x = options.xorigin + xsize / 2
+        x = options.xorigin - xblocks / 2 + xcount * spawnsize
+        if x > options.xorigin + xblocks / 2: x = options.xorigin + xblocks / 2
         for zcount in range(0, ziterations):
-            z = options.zorigin - zsize / 2 + zcount * spawnsize
-            if z > options.zorigin + zsize / 2: z = options.zorigin + zsize / 2
+            z = options.zorigin - zblocks / 2 + zcount * spawnsize
+            if z > options.zorigin + zblocks / 2: z = options.zorigin + zblocks / 2
             msg("Setting spawn to %d, %d" % (x, z))
             setSpawn(level, (int(x), 64, int(z)))
             runMinecraft(options.path, options.command, mcoutput)
