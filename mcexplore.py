@@ -91,12 +91,12 @@ is also used as the value for <zsize>.
     # exit with an error if a size smaller than the initial spawn was specified
     if options.regions:
         multiplier = 512
-        if int(args[0]) < 2 or int(args[1]) < 2:
+        if xsize < 2 or zsize < 2:
             print("When specifying sizes in regions, you must specify an area 2x2 or larger.")
             sys.exit(1)
     else:
         multiplier = 16
-        if int(args[0]) <= 25 or int(args[1]) <= 25:
+        if xsize <= 25 or zsize <= 25:
             print("Minecraft maps start with a 25x25 chunk square. You must specify sizes larger than this.")
             sys.exit(1)
 
@@ -132,8 +132,8 @@ is also used as the value for <zsize>.
     # this will be a region or chunk center, the center of a region or chunk border,
     # or the corner of a region or chunk, depending on the specified dimensions
     # this is not strictly necessary when measuring in chunks, but doesn't hurt
-    xoffset = (int(args[0]) % 2) * (multiplier / 2)
-    zoffset = (int(args[1]) % 2) * (multiplier / 2)
+    xoffset = (xsize % 2) * (multiplier / 2)
+    zoffset = (zsize % 2) * (multiplier / 2)
     options.xorigin = int(round(float(options.xorigin + xoffset) / float(multiplier))) * multiplier - xoffset
     options.zorigin = int(round(float(options.zorigin + zoffset) / float(multiplier))) * multiplier - zoffset
     print("Snapped origin to %d, %d" % (options.xorigin, options.zorigin))
