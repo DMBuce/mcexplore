@@ -210,7 +210,10 @@ def runMinecraft(path, command, verbose=False):
         outstream = DEVNULL
     mc = subprocess.Popen(command.split(), cwd=path, stdin=subprocess.PIPE, stdout=outstream, universal_newlines=True)
     mc.communicate("/stop\n")
-    mc.wait()
+    if mc.wait() != 0:
+        err()
+        err("Command exited with failure status: `{}`".format(command.replace('`', '\\`')))
+        sys.exit(1)
 
 def parseConfig(filename):
     """Parses a server.properties file. Accepts the path to the file as an argument, and returns the key/value pairs."""
