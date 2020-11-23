@@ -26,6 +26,16 @@ def msg(message="", file=sys.stdout):
 def err(message=""):
     msg(message, file=sys.stderr)
 
+# make sure nbt module is installed
+try:
+    from nbt import nbt
+except ImportError:
+    err("Couldn't import module: nbt")
+    err()
+    err("Make sure you followed the install procedure:")
+    err("\thttps://github.com/dmbuce/mcexplore#install")
+    sys.exit(1)
+
 def main():
     # define vars
     prog = os.path.basename(sys.argv[0])
@@ -93,15 +103,6 @@ is also used as the value for <zsize>.
 
     # sanity checks
     #
-    # make sure nbt module is installed
-    try:
-        from nbt import nbt
-    except ImportError:
-        err("Couldn't import module: nbt")
-        err()
-        err("Make sure you followed the install procedure:")
-        err("\thttps://github.com/dmbuce/mcexplore#install")
-        sys.exit(1)
     # make sure sizes are reasonable
     if options.regions and xsize < 2:
         err("xsize too small: {}".format(xsize))
