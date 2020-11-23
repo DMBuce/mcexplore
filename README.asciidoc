@@ -2,13 +2,74 @@ Use a Minecraft server to generate a square of land.
 
 Overview
 --------
-mcexplore uses a Minecraft server to generate square land of a specified
+mcexplore uses a Minecraft server to generate a square land of a specified
 size, measured in chunks (16x16 blocks) or regions (32x32 chunks).
 
 Requirements
 ------------
-This script requires Python 2 and https://github.com/twoolie/NBT[Twoolie's NBT
+This script requires Python and https://github.com/twoolie/NBT[Twoolie's NBT
 library].
+
+Install
+-------
+
+On Arch Linux, you can use the AUR to download, build, and install the
+https://aur.archlinux.org/packages/?O=0&K=mcexplore[mcexplore]
+package in the usual way.
+You will also need to do the same for its dependency, the
+https://aur.archlinux.org/packages/python-nbt/[python-nbt] package.
+
+On other distributions, search your package manager for `python nbt`.
+If a package for Twoolie's NBT library is available, install it.
+Then, download mcexplore.py and make it executable.
+
+On distros that don't have a package for Twoolie's NBT library,
+you should be able to create a python virtualenv,
+use pip to install the python nbt module into it,
+then download and install mcexplore. To do that,
+start by downloading and installing virtualenv through your package manager.
+Typically the package is called `python-virtualenv` or `python3-virtualenv`.
+
+Then, create a new python virtualenv
+
+ mkdir ~/venv
+ virtualenv -p python3 ~/venv/python3
+
+Install the nbt module
+
+ ~/venv/python3/bin/pip install nbt
+
+Download mcexplore and make it executable
+
+ wget https://raw.githubusercontent.com/DMBuce/mcexplore/master/mcexplore.py
+ chmod +x mcexplore.py
+
+Update the shebang in the script so that it uses the python interpreter in the
+virtualenv.
+
+ sed -i "1s,^#!.*,#!$HOME/venv/python3/bin/python," mcexplore.py
+
+You can, of course, move the script somewhere inside your PATH if you prefer
+not to have to type the full path when calling it.
+
+Usage
+-----
+
+If mcexplore is in your PATH, you run it from your server directory, there's
+an existing minecraft world in your server directory, your
+server jar is called minecraft_server.jar, and you want to pregenerate a
+63x63 chunk square of land (1008x1008 blocks) that's centered on spawn, you
+can run
+
+ mcexplore 63
+
+To generate the land centered on (0, 0) instead of spawn,
+
+ mcexplore -x 0 -z 0 63
+
+To do the same in a more verbose way,
+
+ /path/to/mcexplore -p /path/to/server -c "java -jar minecraft_server.jar" -x 0 -z 0 63 63
 
 Documentation
 -------------
