@@ -110,8 +110,8 @@ is also used as the value for <zsize>.
     world = os.path.join(options.path, properties['level-name'])
 
     # make a backup of the level.dat file for later restoration
-    level = os.path.join(options.path, world, "level.dat")
-    levelbak = os.path.join(options.path, world, "level.dat.explorebackup")
+    level = os.path.join(world, "level.dat")
+    levelbak = os.path.join(world, "level.dat.explorebackup")
 
     # don't do anything if a backup already exists. Since we always clean up our backups, a leftover backup means something went wrong last time.
     if os.path.isfile(levelbak):
