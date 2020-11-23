@@ -159,7 +159,7 @@ is also used as the value for <zsize>.
     originalspawn = getSpawn(level)
 
     # back up level.dat
-    msg("Backing up %s to %s" % (level, levelbak))
+    msg("Backing up %s with spawn of %d, %d, %d" % (level, *originalspawn))
     shutil.copyfile(level, levelbak)
 
     # figure out origin
@@ -198,9 +198,9 @@ is also used as the value for <zsize>.
             runMinecraft(options.path, options.command, mcoutput)
 
     # restore the old spawn point
+    msg("Restoring %s with spawn of %d, %d, %d" % (level, *originalspawn))
     os.remove(level)
     os.rename(levelbak, level)
-    msg("Restored %s from %s" % (level, levelbak))
 
 def getSpawn(level):
     """Gets the spawn point from a given level.dat file"""
