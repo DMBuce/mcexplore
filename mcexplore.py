@@ -144,50 +144,52 @@ is also used as the value for <zsize>.
         print("A backup of your level.dat file exists. This means that you've run this program before and it failed, was interrupted, or is still running. You will need to restore or delete this backup before trying again.")
         sys.exit(1)
 
-    # make our backup
-    shutil.copyfile(level, levelbak)
+    try:
+        # back up level.dat
+        shutil.copyfile(level, levelbak)
 
-    # find the server's original spawn point
-    originalspawn = getSpawn(level)
+        # get original spawn point
+        originalspawn = getSpawn(level)
 
-    # use the spawn point as the origin if none was specified
-    if options.xorigin is None: options.xorigin = originalspawn[0]
-    if options.zorigin is None: options.zorigin = originalspawn[2]
+        # figure out origin
+        if options.xorigin is None: options.xorigin = originalspawn[0]
+        if options.zorigin is None: options.zorigin = originalspawn[2]
 
-    # move the origin to the nearest valid center point
-    # this will be a region or chunk center, the center of a region or chunk border,
-    # or the corner of a region or chunk, depending on the specified dimensions
-    # this is not strictly necessary when measuring in chunks, but doesn't hurt
-    xoffset = (xsize % 2) * (multiplier / 2)
-    zoffset = (zsize % 2) * (multiplier / 2)
-    options.xorigin = int(round(float(options.xorigin + xoffset) / float(multiplier))) * multiplier - xoffset
-    options.zorigin = int(round(float(options.zorigin + zoffset) / float(multiplier))) * multiplier - zoffset
-    print("Snapped origin to %d, %d" % (options.xorigin, options.zorigin))
+        # move the origin to the nearest valid center point
+        # this will be a region or chunk center, the center of a region or chunk border,
+        # or the corner of a region or chunk, depending on the specified dimensions
+        # this is not strictly necessary when measuring in chunks, but doesn't hurt
+        xoffset = (xsize % 2) * (multiplier / 2)
+        zoffset = (zsize % 2) * (multiplier / 2)
+        options.xorigin = int(round(float(options.xorigin + xoffset) / float(multiplier))) * multiplier - xoffset
+        options.zorigin = int(round(float(options.zorigin + zoffset) / float(multiplier))) * multiplier - zoffset
+        print("Snapped origin to %d, %d" % (options.xorigin, options.zorigin))
 
-    # loop through a grid of spawn points within the given range, starting and stopping the server for each one
-    # note that the server generated spawn point is 400x400 meters (25x25 chunks), but it does not generate
-    # trees or snow outside of a 384x384 meter box.
-    spawnsize = 384.0
-    # normalize xsize and zsize so that they're measured in blocks
-    xsize = xsize * multiplier - spawnsize - 16
-    zsize = zsize * multiplier - spawnsize - 16
-    print("Size of area to map in meters: %d, %d" % (xsize + spawnsize, zsize + spawnsize))
-    xiterations = int(math.ceil(xsize / spawnsize) + 1)
-    ziterations = int(math.ceil(zsize / spawnsize) + 1)
-    for xcount in range(0, xiterations):
-        x = options.xorigin - xsize / 2 + xcount * spawnsize
-        if x > options.xorigin + xsize / 2: x = options.xorigin + xsize / 2
-        for zcount in range(0, ziterations):
-            z = options.zorigin - zsize / 2 + zcount * spawnsize
-            if z > options.zorigin + zsize / 2: z = options.zorigin + zsize / 2
-            print("Setting spawn to %d, %d" % (x, z))
-            setSpawn(level, (int(x), 64, int(z)))
-            runMinecraft(options.path, options.command, options.verbose)
+        # loop through a grid of spawn points within the given range, starting and stopping the server for each one
+        # note that the server generated spawn point is 400x400 meters (25x25 chunks), but it does not generate
+        # trees or snow outside of a 384x384 meter box.
+        spawnsize = 384.0
+        # normalize xsize and zsize so that they're measured in blocks
+        xsize = xsize * multiplier - spawnsize - 16
+        zsize = zsize * multiplier - spawnsize - 16
+        print("Size of area to map in meters: %d, %d" % (xsize + spawnsize, zsize + spawnsize))
+        xiterations = int(math.ceil(xsize / spawnsize) + 1)
+        ziterations = int(math.ceil(zsize / spawnsize) + 1)
+        for xcount in range(0, xiterations):
+            x = options.xorigin - xsize / 2 + xcount * spawnsize
+            if x > options.xorigin + xsize / 2: x = options.xorigin + xsize / 2
+            for zcount in range(0, ziterations):
+                z = options.zorigin - zsize / 2 + zcount * spawnsize
+                if z > options.zorigin + zsize / 2: z = options.zorigin + zsize / 2
+                print("Setting spawn to %d, %d" % (x, z))
+                setSpawn(level, (int(x), 64, int(z)))
+                runMinecraft(options.path, options.command, options.verbose)
 
-    # restore the old spawn point
-    print("Restoring original spawn of %d, %d, %d" % originalspawn)
-    os.remove(level)
-    os.rename(levelbak, level)
+        # restore the old spawn point
+        print("Restoring original spawn of %d, %d, %d" % originalspawn)
+    finally:
+        #os.remove(level)
+        os.rename(levelbak, level)
 
 def getSpawn(level):
     """Gets the spawn point from a given level.dat file"""
