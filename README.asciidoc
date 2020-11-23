@@ -54,11 +54,12 @@ not to have to type the full path when calling it.
 Usage
 -----
 
-If mcexplore is in your PATH, you run it from a server directory with a valid
-an existing minecraft world in your server directory, your
-server jar is called minecraft_server.jar, and you want to pregenerate a
-63x63 chunk square of land (1008x1008 blocks) that's centered on spawn, you
-can run
+Before running mcexplore, make sure that the minecraft server isn't running
+and that the server directory contains a valid world.
+
+If mcexplore is in your PATH, your server jar is called minecraft_server.jar,
+and you want to pregenerate a 63x63 chunk (1008x1008 blocks) square of land
+that's centered on spawn, you can run
 
  mcexplore 63
 
@@ -68,7 +69,7 @@ To generate the land centered on (0, 0) instead of spawn,
 
 To do the same in a more verbose way,
 
- /path/to/mcexplore -p /path/to/server -c "java -jar minecraft_server.jar nogui" -x 0 -z 0 63 63
+ /path/to/mcexplore -v -p /path/to/server -c "java -jar minecraft_server.jar nogui" -x 0 -z 0 63 63
 
 Documentation
 -------------
