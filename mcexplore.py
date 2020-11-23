@@ -4,6 +4,8 @@
 # Released under the Creative Commons Attribution-ShareAlike license:
 # http://creativecommons.org/licenses/by-sa/3.0/
 
+from __future__ import print_function
+
 import os
 import sys
 import shutil
@@ -20,8 +22,15 @@ try:
 except ImportError:
     DEVNULL = open(os.devnull, 'wb')
 
+def msg(message="", file=sys.stdout):
+    print(message, file=file)
+
+def err(message=""):
+    msg(message, file=sys.stderr)
+
 def main():
     # handle command line options and args
+    prog = os.path.basename(sys.argv[0])
     version = "%prog 1.5"
     usage = "Usage: %prog [options] <xsize> [zsize]"
     description = """\
@@ -61,14 +70,23 @@ is also used as the value for <zsize>.
     )
     (options, args) = parser.parse_args()
 
-    # exit with an error if no arguments were passed
+    # validate args
     if len(args) == 0:
-        print("You must specify a size. Use -h for help.")
+        parser.print_usage(file=sys.stderr)
+        err("{}: error: argument xsize: no size given".format(prog))
+        sys.exit(1)
+    elif not args[0].isdigit():
+        parser.print_usage(file=sys.stderr)
+        err("{}: error: argument xsize: invalid integer value: '{}'".format(prog, args[0].replace("'", "\\'")))
+        sys.exit(1)
+    elif len(args) > 1 and not args[1].isdigit():
+        parser.print_usage(file=sys.stderr)
+        err("{}: error: argument zsize: invalid integer value: '{}'".format(prog, args[0].replace("'", "\\'")))
         sys.exit(1)
 
-    # if only an xsize was specified, use it for the zsize as well
-    if len(args) == 1:
-        args.append(args[0])
+    # parse args
+    xsize = int(args[0])
+    zsize = int(args[1]) if len(args) > 1 else int(args[0])
 
     # exit with an error if a size smaller than the initial spawn was specified
     if options.regions:
@@ -124,8 +142,9 @@ is also used as the value for <zsize>.
     # note that the server generated spawn point is 400x400 meters (25x25 chunks), but it does not generate
     # trees or snow outside of a 384x384 meter box.
     spawnsize = 384.0
-    xsize = int(args[0]) * multiplier - spawnsize - 16
-    zsize = int(args[1]) * multiplier - spawnsize - 16
+    # normalize xsize and zsize so that they're measured in blocks
+    xsize = xsize * multiplier - spawnsize - 16
+    zsize = zsize * multiplier - spawnsize - 16
     print("Size of area to map in meters: %d, %d" % (xsize + spawnsize, zsize + spawnsize))
     xiterations = int(math.ceil(xsize / spawnsize) + 1)
     ziterations = int(math.ceil(zsize / spawnsize) + 1)
@@ -178,3 +197,4 @@ def parseConfig(filename):
 
 if __name__ == "__main__":
     main()
+
