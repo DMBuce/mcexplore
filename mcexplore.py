@@ -13,8 +13,6 @@ import optparse
 import subprocess
 import math
 import time
-import signal
-import atexit
 
 # https://stackoverflow.com/a/11270665
 try:
@@ -40,11 +38,6 @@ except ImportError:
     err("\thttps://github.com/dmbuce/mcexplore#install")
     sys.exit(1)
 
-def cleanup(signum, frame):
-    """Cleanup handler"""
-    # run atexit handlers
-    sys.exit(1)
-
 def main():
     # define vars
     prog = os.path.basename(sys.argv[0])
@@ -56,12 +49,6 @@ Uses a Minecraft server to pregenerate a square section of the world.
 and must be greater than 25 chunks. If only <xsize> is specified, it
 is also used as the value for <zsize>.
 """
-
-    # set signal handlers
-    if os.name == 'posix':
-        signal.signal(signal.SIGINT,  cleanup)
-        signal.signal(signal.SIGTERM, cleanup)
-        signal.signal(signal.SIGHUP,  cleanup)
 
     # parse options
     parser = optparse.OptionParser(version=version, usage=usage, description=description)
@@ -118,8 +105,9 @@ is also used as the value for <zsize>.
     xsize = int(args[0])
     zsize = int(args[1]) if len(args) > 1 else int(args[0])
 
-    # figure out multiplier
+    # figure out multiplier, mcoutput
     multiplier = 512 if options.regions else 16
+    mcoutput = sys.stdout if options.verbose else DEVNULL
 
     # sanity checks
     #
@@ -149,7 +137,7 @@ is also used as the value for <zsize>.
     # do a dry run if the server hasn't started at least once
     if not os.path.isfile(os.path.join(options.path, 'server.properties')):
         msg("Generating world and server.properties")
-        runMinecraft(options.path, options.command, options.verbose)
+        runMinecraft(options.path, options.command, mcoutput)
 
     # use server.properties to figure out path to world folder
     properties = parseConfig(os.path.join(options.path, 'server.properties'))
@@ -171,13 +159,7 @@ is also used as the value for <zsize>.
     originalspawn = getSpawn(level)
 
     # back up level.dat
-    def restoreLevel(level, levelbak):
-        # restore the old spawn point
-        #os.remove(level)
-        os.rename(levelbak, level)
-        msg("Restored %s from %s" % (level, levelbak))
     msg("Backing up %s to %s" % (level, levelbak))
-    atexit.register(restoreLevel, level=level, levelbak=levelbak)
     shutil.copyfile(level, levelbak)
 
     # figure out origin
@@ -213,7 +195,12 @@ is also used as the value for <zsize>.
             if z > options.zorigin + zsize / 2: z = options.zorigin + zsize / 2
             msg("Setting spawn to %d, %d" % (x, z))
             setSpawn(level, (int(x), 64, int(z)))
-            runMinecraft(options.path, options.command, options.verbose)
+            runMinecraft(options.path, options.command, mcoutput)
+
+    # restore the old spawn point
+    os.remove(level)
+    os.rename(levelbak, level)
+    msg("Restored %s from %s" % (level, levelbak))
 
 def getSpawn(level):
     """Gets the spawn point from a given level.dat file"""
@@ -226,17 +213,13 @@ def setSpawn(level, coords):
     (f["Data"]["SpawnX"].value, f["Data"]["SpawnY"].value, f["Data"]["SpawnZ"].value) = coords
     f.write_file(level)
 
-def runMinecraft(path, command, verbose=False):
-    """Runs a minecraft server, and stops it as soon as possible."""
-    if verbose:
-        outstream = sys.stdout
-    else:
-        outstream = DEVNULL
+def runMinecraft(path, command, outstream):
+    """Starts and stops a minecraft server. Returns the server's process."""
     mc = subprocess.Popen(command.split(), cwd=path, stdin=subprocess.PIPE, stdout=outstream, universal_newlines=True)
     mc.communicate("/stop\n")
     if mc.wait() != 0:
         err()
-        err("Command exited with failure status: `%s`" % command.replace('`', '\\`'))
+        err("Command failed: `%s`" % options.command.replace('`', '\\`'))
         sys.exit(1)
 
 def parseConfig(filename):
