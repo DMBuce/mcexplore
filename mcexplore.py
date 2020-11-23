@@ -27,7 +27,7 @@ def err(message=""):
     msg(message, file=sys.stderr)
 
 def main():
-    # handle command line options and args
+    # define vars
     prog = os.path.basename(sys.argv[0])
     version = "%prog 1.5"
     usage = "Usage: %prog [options] <xsize> [zsize]"
@@ -37,6 +37,8 @@ Uses a Minecraft server to pregenerate a square section of the world.
 and must be greater than 25 chunks. If only <xsize> is specified, it
 is also used as the value for <zsize>.
 """
+
+    # parse options
     parser = optparse.OptionParser(version=version, usage=usage, description=description)
     parser.add_option(
         "-v", "--verbose", dest="verbose", default=False,
@@ -86,6 +88,9 @@ is also used as the value for <zsize>.
     xsize = int(args[0])
     zsize = int(args[1]) if len(args) > 1 else int(args[0])
 
+    # figure out multiplier
+    multiplier = 512 if options.regions else 16
+
     # sanity checks
     #
     # make sure nbt module is installed
@@ -115,15 +120,15 @@ is also used as the value for <zsize>.
         print("Generating world and server.properties")
         runMinecraft(options.path, options.command, options.verbose)
 
-    # parse the server.properties file to get the world name
+    # use server.properties to figure out path to world folder
     properties = parseConfig(os.path.join(options.path, 'server.properties'))
     world = os.path.join(options.path, properties['level-name'])
 
-    # make a backup of the level.dat file for later restoration
+    # figure out path to level.dat and backup file
     level = os.path.join(world, "level.dat")
     levelbak = os.path.join(world, "level.dat.explorebackup")
 
-    # don't do anything if a backup already exists. Since we always clean up our backups, a leftover backup means something went wrong last time.
+    # bail if a backup already exists
     if os.path.isfile(levelbak):
         print("A backup of your level.dat file exists. This means that you've run this program before and it failed, was interrupted, or is still running. You will need to restore or delete this backup before trying again.")
         sys.exit(1)
