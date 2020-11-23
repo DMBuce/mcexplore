@@ -55,11 +55,12 @@ Usage
 -----
 
 Before running mcexplore, make sure that the minecraft server isn't running
-and that the server directory contains a valid world.
+and that the server directory contains valid files for `server.properties`,
+`world/level.dat`, `eula.txt`, and the server jar.
 
-If mcexplore is in your PATH, your server jar is called minecraft_server.jar,
-and you want to pregenerate a 63x63 chunk (1008x1008 blocks) square of land
-that's centered on spawn, you can run
+If mcexplore is in your PATH, your server jar is named `minecraft_server.jar`,
+and you want to pregenerate 63x63 chunks (1008x1008 blocks) centered on spawn,
+you can run
 
  mcexplore 63
 
