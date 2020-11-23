@@ -54,6 +54,7 @@ is also used as the value for <zsize>.
 
     # set signal handler
     signal.signal(signal.SIGTERM, sighandler)
+    signal.signal(signal.SIGINT, sighandler)
 
     # parse options
     parser = optparse.OptionParser(version=version, usage=usage, description=description)
