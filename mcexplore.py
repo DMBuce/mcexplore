@@ -83,15 +83,15 @@ is also used as the value for <zsize>.
     # validate args
     if len(args) == 0:
         parser.print_usage(file=sys.stderr)
-        err("{}: error: argument xsize: no size given" % prog)
+        err("%s: error: argument xsize: no size given" % prog)
         sys.exit(1)
     elif not args[0].isdigit():
         parser.print_usage(file=sys.stderr)
-        err("{}: error: argument xsize: invalid integer value: '{}'" % (prog, args[0].replace("'", "\\'")))
+        err("%s: error: argument xsize: invalid integer value: '%s'" % (prog, args[0].replace("'", "\\'")))
         sys.exit(1)
     elif len(args) > 1 and not args[1].isdigit():
         parser.print_usage(file=sys.stderr)
-        err("{}: error: argument zsize: invalid integer value: '{}'" % (prog, args[0].replace("'", "\\'")))
+        err("%s: error: argument zsize: invalid integer value: '%s'" % (prog, args[0].replace("'", "\\'")))
         sys.exit(1)
 
     # parse args
@@ -105,23 +105,23 @@ is also used as the value for <zsize>.
     #
     # make sure sizes are reasonable
     if options.regions and xsize < 2:
-        err("xsize too small: {}" % xsize)
+        err("xsize too small: %s" % xsize)
         err()
         err("The area to generate must be 2x2 regions or larger.")
         sys.exit(1)
     elif options.regions and zsize < 2:
-        err("zsize too small: {}" % zsize)
+        err("zsize too small: %s" % zsize)
         err()
         err("The area to generate must be 2x2 regions or larger.")
         sys.exit(1)
     # permanently loaded spawn area is 25x25 chunks
     elif xsize <= 25:
-        err("xsize too small: {}" % xsize)
+        err("xsize too small: %s" % xsize)
         err()
         err("The area to generate must be 26x26 chunks or larger.")
         sys.exit(1)
     elif zsize <= 25:
-        err("zsize too small: {}" % zsize)
+        err("zsize too small: %s" % zsize)
         err()
         err("The area to generate must be 26x26 chunks or larger.")
         sys.exit(1)
@@ -141,9 +141,10 @@ is also used as the value for <zsize>.
 
     # bail if a backup already exists
     if os.path.isfile(levelbak):
-        err("Backup of level.dat already exists: {}" % levelbak)
+        err("Backup of level.dat already exists: %s" % levelbak)
         err()
-        err("Either {} failed, was interrupted or is still running. Restore or delete the backup and try again." % prog)
+        err("Either %s failed, was interrupted or is still running." % prog)
+        err("Restore or delete the backup and try again.")
         sys.exit(1)
 
     # get original spawn point
@@ -213,7 +214,7 @@ def runMinecraft(path, command, verbose=False):
     mc.communicate("/stop\n")
     if mc.wait() != 0:
         err()
-        err("Command exited with failure status: `{}`" % command.replace('`', '\\`'))
+        err("Command exited with failure status: `%s`" % command.replace('`', '\\`'))
         sys.exit(1)
 
 def parseConfig(filename):
