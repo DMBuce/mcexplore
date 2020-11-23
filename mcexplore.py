@@ -13,6 +13,7 @@ import optparse
 import subprocess
 import math
 import time
+import signal
 
 # https://stackoverflow.com/a/11270665
 try:
@@ -36,6 +37,9 @@ except ImportError:
     err("\thttps://github.com/dmbuce/mcexplore#install")
     sys.exit(1)
 
+def sighandler(signum, frame):
+    sys.exit(1)
+
 def main():
     # define vars
     prog = os.path.basename(sys.argv[0])
@@ -47,6 +51,9 @@ Uses a Minecraft server to pregenerate a square section of the world.
 and must be greater than 25 chunks. If only <xsize> is specified, it
 is also used as the value for <zsize>.
 """
+
+    # set signal handler
+    signal.signal(signal.SIGTERM, sighandler)
 
     # parse options
     parser = optparse.OptionParser(version=version, usage=usage, description=description)
