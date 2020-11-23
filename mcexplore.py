@@ -64,6 +64,11 @@ is also used as the value for <zsize>.
         help="Show minecraft server output."
     )
     parser.add_option(
+        "-q", "--quiet", dest="verbose", default=False,
+        action="store_false",
+        help="Suppress minecraft server output. This is the default behavior."
+    )
+    parser.add_option(
         "-p", "--path", dest="path", default=".",
         help="The working directory to use when running the server. Default: The current directory."
     )
