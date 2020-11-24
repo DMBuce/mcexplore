@@ -54,38 +54,42 @@ is also used as the value for <zsize>.
 
     # parse options
     parser = optparse.OptionParser(version=version, usage=usage, description=description)
+    opthelp = {
+        'v': "Show minecraft server output.",
+        'q': "Suppress minecraft server output. This is the default behavior.",
+        'p': "The working directory to use when running the server. Default: '.'",
+        'c': "The command used to start the server. Default: 'java -jar minecraft_server.jar nogui'",
+        'x': "The X offset to generate land around. Default: The server spawn",
+        'z': "The Z offset to generate land around. Default: The server spawn",
+        'r': "Use units of regions (32x32 chunks) instead of chunks for <xsize> and <zsize>."
+    }
     parser.add_option(
-        "-v", "--verbose", dest="verbose", default=False,
-        action="store_true",
-        help="Show minecraft server output."
+        "-v", "--verbose", help=opthelp['v'],
+        dest="verbose", default=False, action="store_true"
     )
     parser.add_option(
-        "-q", "--quiet", dest="verbose", default=False,
-        action="store_false",
-        help="Suppress minecraft server output. This is the default behavior."
+        "-q", "--quiet", help=opthelp['q'],
+        dest="verbose", default=False, action="store_false"
     )
     parser.add_option(
-        "-p", "--path", dest="path", default=".",
-        help="The working directory to use when running the server. Default: The current directory."
+        "-p", "--path", help=opthelp['p'],
+        dest="path", default="."
     )
     parser.add_option(
-        "-c", "--command", dest="command", default="java -jar minecraft_server.jar nogui",
-        help="The command used to start the server. Default: 'java -jar minecraft_server.jar nogui'."
+        "-c", "--command", help=opthelp['c'],
+        dest="command", default="java -jar minecraft_server.jar nogui"
     )
     parser.add_option(
-        "-x", dest="xorigin", default=None,
-        type="int",
-        help="The X offset to generate land around. Default: The server's spawn point."
+        "-x", dest="xorigin", help=opthelp['x'],
+        default=None, type="int"
     )
     parser.add_option(
-        "-z", dest="zorigin", default=None,
-        type="int",
-        help="The Z offset to generate land around. Default: the server's spawn point."
+        "-z", dest="zorigin", help=opthelp['z'],
+        default=None, type="int"
     )
     parser.add_option(
-        "-r", "--regions", dest="regions", default=False,
-        action="store_true",
-        help="Use units of regions (32x32 chunks) instead of chunks for <xsize> and <zsize>"
+        "-r", "--regions", help=opthelp['r'],
+        dest="regions", default=False, action="store_true"
     )
     (options, args) = parser.parse_args()
 
