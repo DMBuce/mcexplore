@@ -179,14 +179,14 @@ is also used as the value for <zsize>.
     # the total size of spawn chunks along the x/z axis in blocks
     #
     # there are 25x25 spawn chunks (400x400 blocks), however:
-    # trees and snow only generate in a 24x24 chunk area (384x384 blocks),
-    # and in 1.16+ biomes only generate in a 23x23 chunk area (368x368 blocks)
+    # trees and snow only generate in the middle 24x24 chunks (384x384 blocks)
+    # and in 1.16+ biomes only generate in the middle 23x23 chunks (368x368 blocks)
     #
     # partially generate snow/trees/biomes:
     #spawnsize = 400
-    # pre-1.16
+    # minecraft 1.15 or older:
     #spawnsize = 384
-    # 1.16+
+    # minecraft 1.16 and newer:
     spawnsize = 368
 
     # figure out the number of blocks in xsize and zsize
