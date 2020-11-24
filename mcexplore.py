@@ -64,20 +64,16 @@ is also used as the value for <zsize>.
         'r': "Use units of regions (32x32 chunks) instead of chunks for <xsize> and <zsize>."
     }
     parser.add_option(
-        "-v", "--verbose", help=opthelp['v'],
-        dest="verbose", default=False, action="store_true"
-    )
-    parser.add_option(
-        "-q", "--quiet", help=opthelp['q'],
-        dest="verbose", default=False, action="store_false"
+        "-c", "--command", help=opthelp['c'],
+        dest="command", default="java -jar minecraft_server.jar nogui"
     )
     parser.add_option(
         "-p", "--path", help=opthelp['p'],
         dest="path", default="."
     )
     parser.add_option(
-        "-c", "--command", help=opthelp['c'],
-        dest="command", default="java -jar minecraft_server.jar nogui"
+        "-r", "--regions", help=opthelp['r'],
+        dest="regions", default=False, action="store_true"
     )
     parser.add_option(
         "-x", dest="xorigin", help=opthelp['x'],
@@ -88,8 +84,12 @@ is also used as the value for <zsize>.
         default=None, type="int"
     )
     parser.add_option(
-        "-r", "--regions", help=opthelp['r'],
-        dest="regions", default=False, action="store_true"
+        "-q", "--quiet", help=opthelp['q'],
+        dest="verbose", default=False, action="store_false"
+    )
+    parser.add_option(
+        "-v", "--verbose", help=opthelp['v'],
+        dest="verbose", default=False, action="store_true"
     )
     (options, args) = parser.parse_args()
 
