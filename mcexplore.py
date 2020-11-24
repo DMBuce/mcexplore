@@ -158,7 +158,7 @@ is also used as the value for <zsize>.
     else:
         err("Backup of level.dat already exists: %s" % levelbak)
         err()
-        err("Either %s failed, was interrupted or is still running." % prog)
+        err("Either %s failed, was interrupted, or is still running." % prog)
         err("Restore or delete the backup and try again.")
         sys.exit(1)
 
@@ -230,7 +230,10 @@ def runMinecraft(path, command, outstream):
     mc.communicate("/stop\n")
     if mc.wait() != 0:
         err()
-        err("Command failed: `%s`" % options.command.replace('`', '\\`'))
+        err("Command failed: '%s'" % command.replace("'", "\\'"))
+        if outstream != sys.stdout:
+            err("Check %s for errors" % os.path.join(path, 'logs', 'latest.log'))
+
         sys.exit(1)
 
 def parseConfig(filename):
