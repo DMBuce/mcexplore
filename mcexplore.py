@@ -140,23 +140,26 @@ is also used as the value for <zsize>.
     world = os.path.join(options.path, properties['level-name'])
 
     # figure out path to level.dat and backup file
-    level = os.path.join(world, "level.dat")
-    levelbak = os.path.join(world, "level.dat.explorebackup")
+    if os.path.isfile(serverprops):
+        level = os.path.join(world, "level.dat")
+        levelbak = os.path.join(world, "level.dat.explorebackup")
+    else:
+        err("File not found: %s" % serverprops)
+        err()
+        err("Start and stop the server to generate it.")
+        sys.exit(1)
 
-    # bail if a backup already exists
-    if os.path.isfile(levelbak):
+    # back up level.dat
+    originalspawn = getSpawn(level)
+    if not os.path.isfile(levelbak):
+        msg("Backing up %s with spawn of %d, %d, %d" % (level, *originalspawn))
+        shutil.copyfile(level, levelbak)
+    else:
         err("Backup of level.dat already exists: %s" % levelbak)
         err()
         err("Either %s failed, was interrupted or is still running." % prog)
         err("Restore or delete the backup and try again.")
         sys.exit(1)
-
-    # get original spawn point
-    originalspawn = getSpawn(level)
-
-    # back up level.dat
-    msg("Backing up %s with spawn of %d, %d, %d" % (level, *originalspawn))
-    shutil.copyfile(level, levelbak)
 
     # figure out origin
     if options.xorigin is None: options.xorigin = originalspawn[0]
