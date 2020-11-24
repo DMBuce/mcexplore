@@ -39,6 +39,8 @@ except ImportError:
     sys.exit(1)
 
 def main():
+    """Main entry point for the script"""
+
     # define vars
     prog = os.path.basename(sys.argv[0])
     version = "%prog 1.5"
@@ -110,8 +112,6 @@ is also used as the value for <zsize>.
     mcoutput = sys.stdout if options.verbose else DEVNULL
     serverprops = os.path.join(options.path, 'server.properties')
 
-    # sanity checks
-    #
     # make sure sizes are reasonable
     if options.regions and xsize < 2:
         err("xsize too small: %s" % xsize)
@@ -123,7 +123,6 @@ is also used as the value for <zsize>.
         err()
         err("The area to generate must be 2x2 regions or larger.")
         sys.exit(1)
-    # permanently loaded spawn area is 25x25 chunks
     elif xsize <= 25:
         err("xsize too small: %s" % xsize)
         err()
@@ -135,11 +134,9 @@ is also used as the value for <zsize>.
         err("The area to generate must be 26x26 chunks or larger.")
         sys.exit(1)
 
-    # use server.properties to figure out path to world folder
+    # use server.properties to figure out path to level.dat and backup file
     properties = parseConfig(serverprops)
     world = os.path.join(options.path, properties['level-name'])
-
-    # figure out path to level.dat and backup file
     if os.path.isfile(serverprops):
         level = os.path.join(world, "level.dat")
         levelbak = os.path.join(world, "level.dat.explorebackup")
@@ -175,15 +172,26 @@ is also used as the value for <zsize>.
     options.zorigin = int(round(float(options.zorigin + zoffset) / float(multiplier))) * multiplier - zoffset
     msg("Snapped origin to %d, %d" % (options.xorigin, options.zorigin))
 
-    # loop through a grid of spawn points within the given range, starting and stopping the server for each one
-    # note that the server generated spawn point is 400x400 meters (25x25 chunks), but it does not generate
-    # trees or snow outside of a 384x384 meter box, and starting from minecraft 1.16 it does not generate biomes
-    # outside of a 368x368 box
+    # the total size of spawn chunks along the x/z axis in blocks
+    #
+    # there are 25x25 spawn chunks (400x400 blocks), however:
+    # trees and snow only generate in a 24x24 chunk area (384x384 blocks),
+    # and in 1.16+ biomes only generate in a 23x23 chunk area (368x368 blocks)
+    #
+    # partially generate snow/trees/biomes:
+    #spawnsize = 400
+    # pre-1.16
+    #spawnsize = 384
+    # 1.16+
     spawnsize = 368
-    # compute the number of blocks in xsize and zsize
+
+    # figure out the number of blocks in xsize and zsize
     xblocks = xsize * multiplier - spawnsize - 16
     zblocks = zsize * multiplier - spawnsize - 16
     msg("Size of area to generate: %dx%d blocks" % (xblocks + spawnsize, zblocks + spawnsize))
+
+    # loop through a grid of spawn points within the requested range,
+    # starting and stopping the server for each one.
     xiterations = int(math.ceil(xblocks / spawnsize) + 1)
     ziterations = int(math.ceil(zblocks / spawnsize) + 1)
     for xcount in range(0, xiterations):
@@ -196,24 +204,24 @@ is also used as the value for <zsize>.
             setSpawn(level, (int(x), 64, int(z)))
             runMinecraft(options.path, options.command, mcoutput)
 
-    # restore the old spawn point
+    # restore level.dat
     msg("Restoring %s with spawn of %d, %d, %d" % (level, *originalspawn))
     os.remove(level)
     os.rename(levelbak, level)
 
 def getSpawn(level):
-    """Gets the spawn point from a given level.dat file"""
+    """Gets the spawn point from level.dat"""
     data = nbt.NBTFile(level,'rb')["Data"]
     return (data['SpawnX'].value, data['SpawnY'].value, data['SpawnZ'].value)
 
 def setSpawn(level, coords):
-    """Sets the spawn point in a given level.dat file"""
+    """Sets the spawn point in level.dat"""
     f = nbt.NBTFile(level,'rb')
     (f["Data"]["SpawnX"].value, f["Data"]["SpawnY"].value, f["Data"]["SpawnZ"].value) = coords
     f.write_file(level)
 
 def runMinecraft(path, command, outstream):
-    """Starts and stops a minecraft server. Returns the server's process."""
+    """Starts and stops a minecraft server"""
     mc = subprocess.Popen(command.split(), cwd=path, stdin=subprocess.PIPE, stdout=outstream, universal_newlines=True)
     mc.communicate("/stop\n")
     if mc.wait() != 0:
@@ -222,7 +230,7 @@ def runMinecraft(path, command, outstream):
         sys.exit(1)
 
 def parseConfig(filename):
-    """Parses a server.properties file. Accepts the path to the file as an argument, and returns the key/value pairs."""
+    """Parses server.properties and returns a dict of property keys and values."""
     properties = {}
     f = open(filename, 'r')
     for line in f:
