@@ -105,9 +105,10 @@ is also used as the value for <zsize>.
     xsize = int(args[0])
     zsize = int(args[1]) if len(args) > 1 else int(args[0])
 
-    # figure out multiplier, mcoutput
+    # set some vars
     multiplier = 512 if options.regions else 16
     mcoutput = sys.stdout if options.verbose else DEVNULL
+    serverprops = os.path.join(options.path, 'server.properties')
 
     # sanity checks
     #
@@ -134,13 +135,8 @@ is also used as the value for <zsize>.
         err("The area to generate must be 26x26 chunks or larger.")
         sys.exit(1)
 
-    # do a dry run if the server hasn't started at least once
-    if not os.path.isfile(os.path.join(options.path, 'server.properties')):
-        msg("Generating world and server.properties")
-        runMinecraft(options.path, options.command, mcoutput)
-
     # use server.properties to figure out path to world folder
-    properties = parseConfig(os.path.join(options.path, 'server.properties'))
+    properties = parseConfig(serverprops)
     world = os.path.join(options.path, properties['level-name'])
 
     # figure out path to level.dat and backup file
