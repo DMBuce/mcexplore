@@ -61,7 +61,8 @@ is also used as the value for <zsize>.
         'c': "The command used to start the server. Default: 'java -jar minecraft_server.jar nogui'",
         'x': "The X offset to generate land around. Default: The server spawn",
         'z': "The Z offset to generate land around. Default: The server spawn",
-        'r': "Use units of regions (32x32 chunks) instead of chunks for <xsize> and <zsize>."
+        'r': "Use units of regions (32x32 chunks) instead of chunks for <xsize> and <zsize>.",
+        'd': "Set dimension to use. Valid options: nether, end"
     }
     parser.add_option(
         "-c", "--command", help=opthelp['c'],
@@ -91,6 +92,10 @@ is also used as the value for <zsize>.
         "-v", "--verbose", help=opthelp['v'],
         dest="verbose", default=False, action="store_true"
     )
+    parser.add_option(
+        "-d", "--dimension", help=opthelp['d'],
+        dest="dimension", default=None, type="string"
+    )
     (options, args) = parser.parse_args()
 
     # validate args
@@ -105,6 +110,9 @@ is also used as the value for <zsize>.
     elif len(args) > 1 and not args[1].isdigit():
         parser.print_usage(file=sys.stderr)
         err("%s: error: argument zsize: invalid integer value: '%s'" % (prog, args[0].replace("'", "\\'")))
+        sys.exit(1)
+    if options.dimension and not options.dimension == "nether" and not options.dimension == "end":
+        err("%s: error: argument dimension: invalid string value: '%s'" % (prog, options.dimension.replace("'", "\\'")))
         sys.exit(1)
 
     # parse args
@@ -162,6 +170,10 @@ is also used as the value for <zsize>.
         err("Restore or delete the backup and try again.")
         sys.exit(1)
 
+    # Set dimension
+    if options.dimension == "nether": setDimension(level, -1)
+    if options.dimension == "end": setDimension(level, 1)
+
     # figure out origin
     if options.xorigin is None: options.xorigin = originalspawn[0]
     if options.zorigin is None: options.zorigin = originalspawn[2]
@@ -208,6 +220,10 @@ is also used as the value for <zsize>.
             setSpawn(level, (int(x), 64, int(z)))
             runMinecraft(options.path, options.command, mcoutput)
 
+    # Restore dimension
+    if options.dimension == "nether": restoreDimension(-1)
+    if options.dimension == "end": restoreDimension(1)
+
     # restore level.dat
     msg("Restoring %s with spawn of %d, %d, %d" % (level, *originalspawn))
     os.remove(level)
@@ -223,6 +239,29 @@ def setSpawn(level, coords):
     f = nbt.NBTFile(level,'rb')
     (f["Data"]["SpawnX"].value, f["Data"]["SpawnY"].value, f["Data"]["SpawnZ"].value) = coords
     f.write_file(level)
+
+def setDimension(level, dim):
+    """Sets the dimension in level.dat"""
+    f = nbt.NBTFile(level,'rb')
+    os.rename("world/region", "world/regionOverworld")
+    if dim == -1:
+        if not os.path.isdir("world/DIM-1/region"): os.mkdir("world/DIM-1/region")
+        os.rename("world/DIM-1/region", "world/region")
+        f["Data"]["WorldGenSettings"]["dimensions"]["minecraft:overworld"] = f["Data"]["WorldGenSettings"]["dimensions"]["minecraft:the_nether"]
+    if dim == 1:
+        if not os.path.isdir("world/DIM1/region"): os.mkdir("world/DIM1/region")
+        os.rename("world/DIM1/region", "world/region")
+        f["Data"]["WorldGenSettings"]["dimensions"]["minecraft:overworld"] = f["Data"]["WorldGenSettings"]["dimensions"]["minecraft:the_end"]
+    f.write_file(level)
+
+def restoreDimension(dim):
+    """Returns the spawn dimension to the overworld"""
+    if dim == -1:
+        os.rename("world/region", "world/DIM-1/region")
+        os.rename("world/regionOverworld", "world/region")
+    if dim == 1:
+        os.rename("world/region", "world/DIM1/region")
+        os.rename("world/regionOverworld", "world/region")
 
 def runMinecraft(path, command, outstream):
     """Starts and stops a minecraft server"""
