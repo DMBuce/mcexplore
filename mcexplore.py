@@ -170,7 +170,7 @@ is also used as the value for <zsize>.
         err("Restore or delete the backup and try again.")
         sys.exit(1)
 
-    # Set dimension
+    # set dimension
     if options.dimension == "nether": setDimension(level, -1)
     if options.dimension == "end": setDimension(level, 1)
 
@@ -220,7 +220,7 @@ is also used as the value for <zsize>.
             setSpawn(level, (int(x), 64, int(z)))
             runMinecraft(options.path, options.command, mcoutput)
 
-    # Restore dimension
+    # restore dimension
     if options.dimension == "nether": restoreDimension(-1)
     if options.dimension == "end": restoreDimension(1)
 
