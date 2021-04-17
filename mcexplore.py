@@ -62,7 +62,7 @@ is also used as the value for <zsize>.
         'x': "The X offset to generate land around. Default: The server spawn",
         'z': "The Z offset to generate land around. Default: The server spawn",
         'r': "Use units of regions (32x32 chunks) instead of chunks for <xsize> and <zsize>.",
-        'd': "Set dimension to use. Valid options: nether, end"
+        'd': "The dimension to generate. Valid values are 'nether' or 'end'."
     }
     parser.add_option(
         "-c", "--command", help=opthelp['c'],
@@ -112,7 +112,7 @@ is also used as the value for <zsize>.
         err("%s: error: argument zsize: invalid integer value: '%s'" % (prog, args[0].replace("'", "\\'")))
         sys.exit(1)
     if options.dimension and not options.dimension == "nether" and not options.dimension == "end":
-        err("%s: error: argument dimension: invalid string value: '%s'" % (prog, options.dimension.replace("'", "\\'")))
+        err("%s: error: argument dimension: invalid dimension: '%s'" % (prog, options.dimension.replace("'", "\\'")))
         sys.exit(1)
 
     # parse args
