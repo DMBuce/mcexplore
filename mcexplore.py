@@ -160,28 +160,34 @@ is also used as the value for <zsize>.
         err("Start and stop the server to generate it.")
         sys.exit(1)
 
-    # back up level.dat
-    originalspawn = getSpawn(level)
-    if not os.path.isfile(levelbak):
-        msg("Backing up %s with spawn of %d, %d, %d" % (level, *originalspawn))
-        shutil.copyfile(level, levelbak)
-    else:
-        err("Backup of level.dat already exists: %s" % levelbak)
-        err()
-        err("Either %s failed, was interrupted, or is still running." % prog)
-        err("Restore or delete the backup and try again.")
-        sys.exit(1)
-
     # figure out full path to region folders
     regionfolder = os.path.join(options.path, regionfolder)
     origfolder = os.path.join(options.path, "world", "region")
-    origfolderbak = os.path.join(options.path, "world", "region.overworld.exploremoved")
-    if regionfolder != origfolder and not os.path.isdir(origfolder):
-            err("Overworld region folder does not exist: %s" % origfolder)
-            sys.exit(1)
+    origfolderbak = os.path.join(options.path, "world", "region.explorerename-overworld")
+
+    # check if backup of level.dat or renamed region folder already exist
+    if os.path.isfile(levelbak):
+        err("Backup of level.dat already exists: %s" % levelbak)
+        err()
+        err("Either %s failed, was interrupted, or is still running." % prog)
+        sys.exit(1)
+    elif os.path.isdir(origfolderbak):
+        err("Renamed overworld folder already exists: %s" % origfolderbak)
+        err()
+        err("Either %s failed, was interrupted, or is still running." % prog)
+        sys.exit(1)
+
+    # back up level.dat
+    originalspawn = getSpawn(level)
+    msg("Backing up %s with spawn of %d, %d, %d:" % ("level.dat", *originalspawn))
+    msg("  '%s' -> '%s'" % (level, levelbak))
+    shutil.copyfile(level, levelbak)
 
     # replace overworld region folder with dimension region folder
     if regionfolder != origfolder:
+        if not os.path.isdir(origfolder):
+            err("Overworld region folder does not exist: %s" % origfolder)
+            sys.exit(1)
         msg("Moving %s region folder:" % "minecraft:overworld")
         msg("  '%s' -> '%s'" % (origfolder, origfolderbak))
         os.rename(origfolder, origfolderbak)
@@ -252,7 +258,8 @@ is also used as the value for <zsize>.
         os.rename(origfolderbak, origfolder)
 
     # restore level.dat
-    msg("Restoring %s with spawn of %d, %d, %d" % (level, *originalspawn))
+    msg("Restoring %s with spawn of %d, %d, %d:" % ("level.dat", *originalspawn))
+    msg("  '%s' -> '%s'" % (level, levelbak))
     os.remove(level)
     os.rename(levelbak, level)
 
