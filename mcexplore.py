@@ -111,7 +111,7 @@ is also used as the value for <zsize>.
         parser.print_usage(file=sys.stderr)
         err("%s: error: argument zsize: invalid integer value: '%s'" % (prog, args[0].replace("'", "\\'")))
         sys.exit(1)
-    if options.dimension and not options.dimension == "nether" and not options.dimension == "end":
+    elif options.dimension and options.dimension not in [ "nether", "end" ]:
         err("%s: error: argument dimension: invalid dimension: '%s'" % (prog, options.dimension.replace("'", "\\'")))
         sys.exit(1)
 
