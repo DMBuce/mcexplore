@@ -94,7 +94,7 @@ is also used as the value for <zsize>.
     )
     parser.add_option(
         "-d", "--dimension", help=opthelp['d'],
-        dest="dimension", default=None, type="string"
+        dest="dimension", default=None
     )
     (options, args) = parser.parse_args()
 
