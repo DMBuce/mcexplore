@@ -62,11 +62,15 @@ is also used as the value for <zsize>.
         'x': "The X offset to generate land around. Default: The server spawn",
         'z': "The Z offset to generate land around. Default: The server spawn",
         'r': "Use units of regions (32x32 chunks) instead of chunks for <xsize> and <zsize>.",
-        'd': "The dimension to generate. Valid values are 'nether' or 'end'."
+        'd': "The ID and region folder of the dimension to generate. Default: 'minecraft:overworld=world/region'"
     }
     parser.add_option(
         "-c", "--command", help=opthelp['c'],
         dest="command", default="java -jar minecraft_server.jar nogui"
+    )
+    parser.add_option(
+        "-d", "--dimension", help=opthelp['d'],
+        dest="dimension", default="minecraft:overworld=world/region"
     )
     parser.add_option(
         "-p", "--path", help=opthelp['p'],
@@ -92,10 +96,6 @@ is also used as the value for <zsize>.
         "-v", "--verbose", help=opthelp['v'],
         dest="verbose", default=False, action="store_true"
     )
-    parser.add_option(
-        "-d", "--dimension", help=opthelp['d'],
-        dest="dimension", default=None
-    )
     (options, args) = parser.parse_args()
 
     # validate args
@@ -111,9 +111,6 @@ is also used as the value for <zsize>.
         parser.print_usage(file=sys.stderr)
         err("%s: error: argument zsize: invalid integer value: '%s'" % (prog, args[0].replace("'", "\\'")))
         sys.exit(1)
-    elif options.dimension and options.dimension not in [ "nether", "end" ]:
-        err("%s: error: argument dimension: invalid dimension: '%s'" % (prog, options.dimension.replace("'", "\\'")))
-        sys.exit(1)
 
     # parse args
     xsize = int(args[0])
@@ -123,6 +120,7 @@ is also used as the value for <zsize>.
     multiplier = 512 if options.regions else 16
     mcoutput = sys.stdout if options.verbose else DEVNULL
     serverprops = os.path.join(options.path, 'server.properties')
+    (dimension, sep, regionfolder) = options.dimension.partition("=")
 
     # make sure sizes are reasonable
     if options.regions and xsize < 2:
@@ -144,6 +142,16 @@ is also used as the value for <zsize>.
         err("zsize too small: %s" % zsize)
         err()
         err("The area to generate must be 26x26 chunks or larger.")
+        sys.exit(1)
+
+    # make sure region folder was set properly
+    # TODO: check for existence of necessary directories
+    # TODO: make some educated guesses and check the filesystem for the existence
+    #       of common nether/end folders
+    if regionfolder == "":
+        err("Unknown region folder for dimension: %s" % options.dimension)
+        err()
+        err("Dimension must be specified as 'id=folder' e.g. '%s'" % 'minecraft:the_nether=world/DIM-1/region')
         sys.exit(1)
 
     # use server.properties to figure out path to level.dat and backup file
@@ -170,9 +178,16 @@ is also used as the value for <zsize>.
         err("Restore or delete the backup and try again.")
         sys.exit(1)
 
-    # set dimension
-    if options.dimension == "nether": setDimension(level, -1)
-    if options.dimension == "end": setDimension(level, 1)
+    # replace overworld region folder with dimension region folder
+    if regionfolder != "world/region":
+        os.rename("world/region", "world/regionOverworld")
+        if not os.path.isdir(regionfolder):
+            os.mkdir(regionfolder)
+        os.rename(regionfolder, "world/region")
+
+    # set generator settings for dimension
+    if dimension != "minecraft:overworld":
+        setDimension(level, dimension)
 
     # figure out origin
     if options.xorigin is None: options.xorigin = originalspawn[0]
@@ -221,8 +236,9 @@ is also used as the value for <zsize>.
             runMinecraft(options.path, options.command, mcoutput)
 
     # restore dimension
-    if options.dimension == "nether": restoreDimension(-1)
-    if options.dimension == "end": restoreDimension(1)
+    if regionfolder != "world/region":
+        os.rename("world/region", regionfolder)
+        os.rename("world/regionOverworld", "world/region")
 
     # restore level.dat
     msg("Restoring %s with spawn of %d, %d, %d" % (level, *originalspawn))
@@ -241,27 +257,10 @@ def setSpawn(level, coords):
     f.write_file(level)
 
 def setDimension(level, dim):
-    """Sets the dimension in level.dat"""
+    """Copies the generator settings for a dimension in level.dat to the overworld"""
     f = nbt.NBTFile(level,'rb')
-    os.rename("world/region", "world/regionOverworld")
-    if dim == -1:
-        if not os.path.isdir("world/DIM-1/region"): os.mkdir("world/DIM-1/region")
-        os.rename("world/DIM-1/region", "world/region")
-        f["Data"]["WorldGenSettings"]["dimensions"]["minecraft:overworld"] = f["Data"]["WorldGenSettings"]["dimensions"]["minecraft:the_nether"]
-    if dim == 1:
-        if not os.path.isdir("world/DIM1/region"): os.mkdir("world/DIM1/region")
-        os.rename("world/DIM1/region", "world/region")
-        f["Data"]["WorldGenSettings"]["dimensions"]["minecraft:overworld"] = f["Data"]["WorldGenSettings"]["dimensions"]["minecraft:the_end"]
+    f["Data"]["WorldGenSettings"]["dimensions"]["minecraft:overworld"] = f["Data"]["WorldGenSettings"]["dimensions"][dim]
     f.write_file(level)
-
-def restoreDimension(dim):
-    """Returns the spawn dimension to the overworld"""
-    if dim == -1:
-        os.rename("world/region", "world/DIM-1/region")
-        os.rename("world/regionOverworld", "world/region")
-    if dim == 1:
-        os.rename("world/region", "world/DIM1/region")
-        os.rename("world/regionOverworld", "world/region")
 
 def runMinecraft(path, command, outstream):
     """Starts and stops a minecraft server"""

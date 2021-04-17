@@ -57,8 +57,10 @@ Options
 *-r, --regions*::
 	When enabled, measure in regions instead of chunks.
 
-*-d, --dimension* <dimension>::
-	Set which dimension to generate. Acceptable values: nether, end
+*-d, --dimension* <id>=<folder>::
+	Set the ID and region folder of the dimension to generate. Relative folder
+	paths are interpreted relative to `--path`. Defaults to
+	\'minecraft:overworld=world/region'.
 
 Authors
 -------
