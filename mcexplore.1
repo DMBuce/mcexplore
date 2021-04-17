@@ -2,12 +2,12 @@
 .\"     Title: mcexplore
 .\"    Author: [see the "Authors" section]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 04/13/2021
+.\"      Date: 04/17/2021
 .\"    Manual: \ \&
 .\"    Source: \ \&
 .\"  Language: English
 .\"
-.TH "MCEXPLORE" "1" "04/13/2021" "\ \&" "\ \&"
+.TH "MCEXPLORE" "1" "04/17/2021" "\ \&" "\ \&"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -81,9 +81,9 @@ Set the Z offset to generate land around\&. Defaults to the server\(cqs spawn po
 When enabled, measure in regions instead of chunks\&.
 .RE
 .PP
-\fB\-d, \-\-dimension\fR <dimension>
+\fB\-d, \-\-dimension\fR <id>=<folder>
 .RS 4
-Set which dimension to generate\&. Acceptable values: nether, end
+Set the ID and region folder of the dimension to generate\&. Relative folder paths are interpreted relative to \(oq\-\-path`\&. Defaults to \*(Aqminecraft:overworld=world/region\(cq\&.
 .RE
 .SH "AUTHORS"
 .sp
