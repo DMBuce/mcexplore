@@ -57,6 +57,9 @@ Options
 *-r, --regions*::
 	When enabled, measure in regions instead of chunks.
 
+*-d, --dimension* <dimension>::
+	Set which dimension to generate. Acceptable values: nether, end
+
 Authors
 -------
 
