@@ -98,7 +98,7 @@ is also used as the value for <zsize>.
     )
     (options, args) = parser.parse_args()
 
-    # validate args
+    # validate args and options
     if len(args) == 0:
         parser.print_usage(file=sys.stderr)
         err("%s: error: argument xsize: no size given" % prog)
@@ -110,6 +110,10 @@ is also used as the value for <zsize>.
     elif len(args) > 1 and not args[1].isdigit():
         parser.print_usage(file=sys.stderr)
         err("%s: error: argument zsize: invalid integer value: '%s'" % (prog, args[0].replace("'", "\\'")))
+        sys.exit(1)
+    elif "=" not in options.dimension:
+        parser.print_usage(file=sys.stderr)
+        err("%s: error: option -d: dimension not specified as 'id=folder': '%s'" % (prog, options.dimension.replace("'", "\\'")))
         sys.exit(1)
 
     # parse args
@@ -144,16 +148,6 @@ is also used as the value for <zsize>.
         err("The area to generate must be 26x26 chunks or larger.")
         sys.exit(1)
 
-    # make sure region folder was set properly
-    # TODO: check for existence of necessary directories
-    # TODO: make some educated guesses and check the filesystem for the existence
-    #       of common nether/end folders
-    if regionfolder == "":
-        err("Unknown region folder for dimension: %s" % options.dimension)
-        err()
-        err("Dimension must be specified as 'id=folder' e.g. '%s'" % 'minecraft:the_nether=world/DIM-1/region')
-        sys.exit(1)
-
     # use server.properties to figure out path to level.dat and backup file
     properties = parseConfig(serverprops)
     world = os.path.join(options.path, properties['level-name'])
@@ -178,12 +172,25 @@ is also used as the value for <zsize>.
         err("Restore or delete the backup and try again.")
         sys.exit(1)
 
+    # figure out full path to region folders
+    regionfolder = os.path.join(options.path, regionfolder)
+    origfolder = os.path.join(options.path, "world", "region")
+    origfolderbak = os.path.join(options.path, "world", "region.overworld.exploremoved")
+    if regionfolder != origfolder and not os.path.isdir(origfolder):
+            err("Overworld region folder does not exist: %s" % origfolder)
+            sys.exit(1)
+
     # replace overworld region folder with dimension region folder
-    if regionfolder != "world/region":
-        os.rename("world/region", "world/regionOverworld")
+    if regionfolder != origfolder:
+        msg("Moving %s region folder:" % "minecraft:overworld")
+        msg("  '%s' -> '%s'" % (origfolder, origfolderbak))
+        os.rename(origfolder, origfolderbak)
+        msg("Moving %s region folder:" % dimension)
+        msg("  '%s' -> '%s'" % (regionfolder, origfolder))
         if not os.path.isdir(regionfolder):
-            os.mkdir(regionfolder)
-        os.rename(regionfolder, "world/region")
+            os.mkdir(origfolder)
+        else:
+            os.rename(regionfolder, origfolder)
 
     # set generator settings for dimension
     if dimension != "minecraft:overworld":
@@ -236,9 +243,13 @@ is also used as the value for <zsize>.
             runMinecraft(options.path, options.command, mcoutput)
 
     # restore dimension
-    if regionfolder != "world/region":
-        os.rename("world/region", regionfolder)
-        os.rename("world/regionOverworld", "world/region")
+    if regionfolder != origfolder:
+        msg("Restoring %s region folder:" % dimension)
+        msg("  '%s' -> '%s'" % (origfolder, regionfolder))
+        os.rename(origfolder, regionfolder)
+        msg("Restoring %s region folder:" % "minecraft:overworld")
+        msg("  '%s' -> '%s'" % (origfolderbak, origfolder))
+        os.rename(origfolderbak, origfolder)
 
     # restore level.dat
     msg("Restoring %s with spawn of %d, %d, %d" % (level, *originalspawn))
