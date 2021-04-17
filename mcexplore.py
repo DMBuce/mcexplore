@@ -283,7 +283,7 @@ def setDimension(level, dim):
 def runMinecraft(path, command, outstream):
     """Starts and stops a minecraft server"""
     mc = subprocess.Popen(command.split(), cwd=path, stdin=subprocess.PIPE, stdout=outstream, universal_newlines=True)
-    mc.communicate("/stop\n")
+    mc.communicate("stop\n")
     if mc.wait() != 0:
         err()
         err("Command failed: '%s'" % command.replace("'", "\\'"))
