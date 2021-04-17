@@ -54,6 +54,8 @@ not to have to type the full path when calling it.
 Usage
 -----
 
+Always take a backup before running mcexplore against your world.
+
 Before running mcexplore, make sure that the minecraft server isn't running
 and that the server directory contains valid files for `server.properties`,
 `world/level.dat`, `eula.txt`, and the server jar.
