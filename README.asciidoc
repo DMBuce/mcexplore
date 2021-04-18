@@ -61,7 +61,7 @@ and that the server directory contains valid files for `server.properties`,
 `world/level.dat`, `eula.txt`, and the server jar.
 
 If you're generating a custom dimension with a data pack, also make sure that
-you can load the dimension with
+you can load the dimension with e.g.
 `/execute in namespace:dimension_id run teleport @p ~ ~ ~`, then shut the
 server down before running mcexplore.
 
