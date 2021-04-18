@@ -160,6 +160,11 @@ is also used as the value for <zsize>.
         err("Start and stop the server to generate it.")
         sys.exit(1)
 
+    # make sure dimension is defined
+    if dimension != "minecraft:overworld" and dimension not in getDimensions(level):
+        err("Dimension not defined in %s: '%s'" % ("level.dat", dimension))
+        sys.exit(1)
+
     # figure out full path to region folders
     regionfolder = os.path.join(options.path, regionfolder)
     origfolder = os.path.join(options.path, "world", "region")
@@ -201,10 +206,7 @@ is also used as the value for <zsize>.
         os.rename(regionfolder, origfolder)
 
     # set generator settings for dimension
-    if dimension not in getDimensions(level):
-        err("Dimension not defined in %s: %s" % ("level.dat", dimension))
-        sys.exit(1)
-    elif dimension != "minecraft:overworld":
+    if dimension != "minecraft:overworld":
         setDimension(level, dimension)
 
     # figure out origin
