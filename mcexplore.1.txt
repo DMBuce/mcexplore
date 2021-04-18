@@ -61,6 +61,9 @@ Options
 	Set the ID and region folder of the dimension to generate. Relative folder
 	paths are interpreted relative to `--path`. Defaults to
 	\'minecraft:overworld=world/region'.
++
+Since this option depends on a Minecraft feature that Mojang considers
+experimental, it is subject to change.
 
 Authors
 -------
