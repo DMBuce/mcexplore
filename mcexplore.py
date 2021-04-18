@@ -125,6 +125,8 @@ is also used as the value for <zsize>.
     mcoutput = sys.stdout if options.verbose else DEVNULL
     serverprops = os.path.join(options.path, 'server.properties')
     (dimension, sep, regionfolder) = options.dimension.partition("=")
+    if ":" not in dimension:
+        dimension = "minecraft:" + dimension
 
     # make sure sizes are reasonable
     if options.regions and xsize < 2:
