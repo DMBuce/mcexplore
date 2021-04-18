@@ -60,6 +60,11 @@ Before running mcexplore, make sure that the minecraft server isn't running
 and that the server directory contains valid files for `server.properties`,
 `world/level.dat`, `eula.txt`, and the server jar.
 
+If you're generating a custom dimension with a data pack, also make sure that
+you can load the dimension with
+`/execute in namespace:dimension_id run teleport @p ~ ~ ~`, then shut the
+server down before running mcexplore.
+
 If mcexplore is in your PATH, your server jar is named `minecraft_server.jar`,
 and you want to pregenerate 63x63 chunks (1008x1008 blocks) centered on spawn,
 you can run
@@ -70,9 +75,18 @@ To generate the land centered on (0, 0) instead of spawn,
 
  mcexplore -x 0 -z 0 63
 
+To do the same in the Nether or The End,
+
+ mcexplore -d minecraft:the_nether=world/DIM-1/region -x 0 -z 0 63
+ mcexplore -d minecraft:the_end=world/DIM1/region -x 0 -z 0 63
+
+To do the same in a custom Melon dimension created by a data pack,
+
+ mcexplore -d melon:the_melon=world/dimensions/melon/the_melon/region -x 0 -z 0 63
+
 To do the same in a more verbose way,
 
- /path/to/mcexplore -v -p /path/to/server -c "java -jar minecraft_server.jar nogui" -x 0 -z 0 63 63
+ /path/to/mcexplore -v -p /path/to/server -c "java -jar minecraft_server.jar nogui" -d melon:the_melon=world/dimensions/melon/the_melon/region -x 0 -z 0 63 63
 
 Documentation
 -------------
