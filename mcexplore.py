@@ -186,7 +186,10 @@ is also used as the value for <zsize>.
     # replace overworld region folder with dimension region folder
     if regionfolder != origfolder:
         if not os.path.isdir(origfolder):
-            err("Overworld region folder does not exist: %s" % origfolder)
+            err("Directory not found: %s" % origfolder)
+            sys.exit(1)
+        elif not os.path.isdir(os.path.dirname(regionfolder)):
+            err("Directory not found: %s" % regionfolder)
             sys.exit(1)
         msg("Moving %s region folder:" % "minecraft:overworld")
         msg("  '%s' -> '%s'" % (origfolder, origfolderbak))
@@ -194,9 +197,8 @@ is also used as the value for <zsize>.
         msg("Moving %s region folder:" % dimension)
         msg("  '%s' -> '%s'" % (regionfolder, origfolder))
         if not os.path.isdir(regionfolder):
-            os.mkdir(origfolder)
-        else:
-            os.rename(regionfolder, origfolder)
+            os.mkdir(regionfolder)
+        os.rename(regionfolder, origfolder)
 
     # set generator settings for dimension
     if dimension != "minecraft:overworld":
