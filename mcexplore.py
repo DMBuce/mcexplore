@@ -167,7 +167,7 @@ is also used as the value for <zsize>.
 
     # check if backup of level.dat or renamed region folder already exist
     if os.path.isfile(levelbak):
-        err("Backup of level.dat already exists: %s" % levelbak)
+        err("Backup of %s already exists: %s" % ("level.dat", levelbak))
         err()
         err("Either %s failed, was interrupted, or is still running." % prog)
         sys.exit(1)
@@ -201,7 +201,10 @@ is also used as the value for <zsize>.
         os.rename(regionfolder, origfolder)
 
     # set generator settings for dimension
-    if dimension != "minecraft:overworld":
+    if dimension not in getDimensions(level):
+        err("Dimension not defined in %s: %s" % ("level.dat", dimension))
+        sys.exit(1)
+    elif dimension != "minecraft:overworld":
         setDimension(level, dimension)
 
     # figure out origin
@@ -275,6 +278,11 @@ def setSpawn(level, coords):
     f = nbt.NBTFile(level,'rb')
     (f["Data"]["SpawnX"].value, f["Data"]["SpawnY"].value, f["Data"]["SpawnZ"].value) = coords
     f.write_file(level)
+
+def getDimensions(level):
+    """Copies the generator settings for a dimension in level.dat to the overworld"""
+    data = nbt.NBTFile(level,'rb')["Data"]
+    return [ key for key in data["WorldGenSettings"]["dimensions"] ]
 
 def setDimension(level, dim):
     """Copies the generator settings for a dimension in level.dat to the overworld"""
