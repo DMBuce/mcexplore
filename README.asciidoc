@@ -100,8 +100,8 @@ Project documentation can be found in these files:
 * LICENSE - Terms and conditions
 * README  - This document
 
-The changelog can be viewed by running `git tag -l -n100` in the git
-repository.
+The changelog can be viewed on GitHub at
+https://github.com/DMBuce/mcexplore/releases .
 
 /////
 vim: set syntax=asciidoc ts=4 sw=4 noet:
