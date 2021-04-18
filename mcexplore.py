@@ -1,6 +1,8 @@
 #!/usr/bin/python
 
-# mcexplore.py, by similardilemma
+# mcexplore.py
+# originally by similardilemma
+# maintained by DMBuce
 # Released under the Creative Commons Attribution-ShareAlike license:
 # http://creativecommons.org/licenses/by-sa/3.0/
 

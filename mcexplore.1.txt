@@ -65,6 +65,7 @@ Options
 Authors
 -------
 
+* DMBuce <https://github.com/DMBuce>
 * similardilemma <https://github.com/similardilemma>
 
 To see a full list of contributors, use `git shortlog -s` in the mcexplore
