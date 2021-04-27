@@ -193,7 +193,7 @@ is also used as the value for <zsize>.
     shutil.copyfile(level, levelbak)
 
     # replace overworld region folder with dimension region folder
-    if regionfolder != origfolder:
+    if not os.path.samefile(regionfolder, origfolder):
         if not os.path.isdir(origfolder):
             err("Directory not found: %s" % origfolder)
             sys.exit(1)
@@ -260,7 +260,7 @@ is also used as the value for <zsize>.
             runMinecraft(options.path, options.command, mcoutput)
 
     # restore dimension
-    if regionfolder != origfolder:
+    if not os.path.samefile(regionfolder, origfolder):
         msg("Restoring %s region folder:" % dimension)
         msg("  '%s' -> '%s'" % (origfolder, regionfolder))
         os.rename(origfolder, regionfolder)
