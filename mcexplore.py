@@ -69,8 +69,6 @@ is also used as the value for <zsize>.
         'z': "The Z offset to generate land around. Default: The server spawn",
         'r': "Use units of regions (32x32 chunks) instead of chunks for <xsize> and <zsize>.",
         'd': "The ID and region folder of the dimension to generate. Default: 'minecraft:overworld=world/region'",
-        'i': "Starts and stops the server if server.properties or level.dat don't exist.",
-        'I': "Disables --init. This is the default behavior.",
         'e': "Agree to the Minecraft End User License Agreement: <https://account.mojang.com/documents/minecraft_eula>",
     }
     parser.add_option(
@@ -80,14 +78,6 @@ is also used as the value for <zsize>.
     parser.add_option(
         "-d", "--dimension", help=opthelp['d'],
         dest="dimension", default="minecraft:overworld=world/region"
-    )
-    parser.add_option(
-        "-i", "--init", help=opthelp['i'],
-        dest="init", default=False, action="store_true"
-    )
-    parser.add_option(
-        "-I", "--no-init", help=opthelp['I'],
-        dest="init", default=False, action="store_false"
     )
     parser.add_option(
         "-p", "--path", help=opthelp['p'],
@@ -191,8 +181,8 @@ is also used as the value for <zsize>.
         with open(eula, "w") as f:
             f.write("eula=true\n")
 
-    # init server if server.properties doesn't exist
-    if options.init and not os.path.isfile(serverprops):
+    # start and stop server if server.properties doesn't exist
+    if not os.path.isfile(serverprops):
         runMinecraft(options.path, options.command, mcoutput)
 
     # get server properties
@@ -200,24 +190,21 @@ is also used as the value for <zsize>.
         properties = parseConfig(serverprops)
     else:
         err("File not found: %s" % serverprops)
-        err()
-        err("Use --init to generate it.")
         sys.exit(1)
 
     # figure out path to level.dat and backup file
     world = os.path.join(options.path, properties['level-name'])
-    if os.path.isfile(serverprops):
-        level = os.path.join(world, "level.dat")
-        levelbak = os.path.join(world, "level.dat.explorebackup")
-    else:
-        err("File not found: %s" % serverprops)
-        err()
-        err("Use --init to generate it.")
-        sys.exit(1)
+    level = os.path.join(world, "level.dat")
+    levelbak = os.path.join(world, "level.dat.explorebackup")
 
-    # init server if level.dat doesn't exist
-    if options.init and not os.path.isfile(level):
+    # start and stop server if level.dat doesn't exist
+    if not os.path.isfile(level):
         runMinecraft(options.path, options.command, mcoutput)
+
+    # make sure level.dat exists
+    if not os.path.isfile(level):
+        err("File not found: %s" % level)
+        sys.exit(1)
 
     # make sure dimension is defined
     if dimension != "minecraft:overworld" and dimension not in getDimensions(level):
