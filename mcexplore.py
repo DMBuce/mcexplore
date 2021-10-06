@@ -15,12 +15,7 @@ import optparse
 import subprocess
 import math
 import time
-
-# https://stackoverflow.com/a/11270665
-try:
-    from subprocess import DEVNULL
-except ImportError:
-    DEVNULL = open(os.devnull, 'wb')
+from subprocess import DEVNULL
 
 def msg(message="", file=sys.stdout):
     """Prints an info message"""

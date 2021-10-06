@@ -7,7 +7,7 @@ size, measured in chunks (16x16 blocks) or regions (32x32 chunks).
 
 Requirements
 ------------
-This script requires Python and https://github.com/twoolie/NBT[Twoolie's NBT
+This script requires Python 3 and https://github.com/twoolie/NBT[Twoolie's NBT
 library].
 
 Install
