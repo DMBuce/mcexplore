@@ -29,22 +29,27 @@ specified, it is used for both 'xsize' and 'zsize'.
 Options
 -------
 
-*--version*::
-	Show version number and exit.
-
 *-h, --help*::
 	Show this help message and exit.
 
-*-v, --verbose*::
-	When enabled, the Minecraft server output is shown on the console.
+*--version*::
+	Show version number and exit.
+
+*-c, --command* <command>::
+	Specifies the 'command' used to start the server. Defaults to
+	\'java -jar minecraft_server.jar nogui'.
+
+*-d, --dimension* <id>=<folder>::
+	Set the ID and region folder of the dimension to generate. Relative folder
+	paths are interpreted relative to `--path`. Defaults to
+	\'minecraft:overworld=world/region'.
 
 *-p, --path* <path>::
 	Sets the 'path' of the working directory to use when running the server.
 	Defaults to the current directory (`.`).
 
-*-c, --command* <command>::
-	Specifies the 'command' used to start the server. Defaults to
-	\'java -jar minecraft_server.jar nogui'.
+*-r, --regions*::
+	When enabled, measure in regions instead of chunks.
 
 *-x* <xorigin>::
 	Set the X offset to generate land around. Defaults to the server's spawn
@@ -54,13 +59,11 @@ Options
 	Set the Z offset to generate land around. Defaults to the server's spawn
 	point.
 
-*-r, --regions*::
-	When enabled, measure in regions instead of chunks.
+*-q, --quiet*::
+	Don't show Minecraft server output. This is the default behavior.
 
-*-d, --dimension* <id>=<folder>::
-	Set the ID and region folder of the dimension to generate. Relative folder
-	paths are interpreted relative to `--path`. Defaults to
-	\'minecraft:overworld=world/region'.
+*-v, --verbose*::
+	Show Minecraft server output.
 +
 Since this option depends on a Minecraft feature that Mojang considers
 experimental, it is subject to change.

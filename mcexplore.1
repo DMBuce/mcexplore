@@ -2,12 +2,12 @@
 .\"     Title: mcexplore
 .\"    Author: [see the "Authors" section]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 04/17/2021
+.\"      Date: 10/06/2021
 .\"    Manual: \ \&
 .\"    Source: \ \&
 .\"  Language: English
 .\"
-.TH "MCEXPLORE" "1" "04/17/2021" "\ \&" "\ \&"
+.TH "MCEXPLORE" "1" "10/06/2021" "\ \&" "\ \&"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -37,19 +37,26 @@ mcexplore \- Use a Minecraft server to generate a square of land\&.
 mcexplore uses a Minecraft server to generate square land of a specified size, measured in chunks (16x16 blocks) or regions (32x32 chunks)\&. \fIxsize\fR and \fIzsize\fR are the extent of the rectangle in the x and z direction, respectively, and must be greater than 25 chunks\&. If only \fIxsize\fR is specified, it is used for both \fIxsize\fR and \fIzsize\fR\&.
 .SH "OPTIONS"
 .PP
-\fB\-\-version\fR
-.RS 4
-Show version number and exit\&.
-.RE
-.PP
 \fB\-h, \-\-help\fR
 .RS 4
 Show this help message and exit\&.
 .RE
 .PP
-\fB\-v, \-\-verbose\fR
+\fB\-\-version\fR
 .RS 4
-When enabled, the Minecraft server output is shown on the console\&.
+Show version number and exit\&.
+.RE
+.PP
+\fB\-c, \-\-command\fR <command>
+.RS 4
+Specifies the
+\fIcommand\fR
+used to start the server\&. Defaults to \*(Aqjava \-jar minecraft_server\&.jar nogui\*(Aq\&.
+.RE
+.PP
+\fB\-d, \-\-dimension\fR <id>=<folder>
+.RS 4
+Set the ID and region folder of the dimension to generate\&. Relative folder paths are interpreted relative to \(oq\-\-path`\&. Defaults to \*(Aqminecraft:overworld=world/region\(cq\&.
 .RE
 .PP
 \fB\-p, \-\-path\fR <path>
@@ -59,11 +66,9 @@ Sets the
 of the working directory to use when running the server\&. Defaults to the current directory (\&.)\&.
 .RE
 .PP
-\fB\-c, \-\-command\fR <command>
+\fB\-r, \-\-regions\fR
 .RS 4
-Specifies the
-\fIcommand\fR
-used to start the server\&. Defaults to \*(Aqjava \-jar minecraft_server\&.jar nogui\*(Aq\&.
+When enabled, measure in regions instead of chunks\&.
 .RE
 .PP
 \fB\-x\fR <xorigin>
@@ -76,14 +81,16 @@ Set the X offset to generate land around\&. Defaults to the server\(cqs spawn po
 Set the Z offset to generate land around\&. Defaults to the server\(cqs spawn point\&.
 .RE
 .PP
-\fB\-r, \-\-regions\fR
+\fB\-q, \-\-quiet\fR
 .RS 4
-When enabled, measure in regions instead of chunks\&.
+Don\(cqt show Minecraft server output\&. This is the default behavior\&.
 .RE
 .PP
-\fB\-d, \-\-dimension\fR <id>=<folder>
+\fB\-v, \-\-verbose\fR
 .RS 4
-Set the ID and region folder of the dimension to generate\&. Relative folder paths are interpreted relative to \(oq\-\-path`\&. Defaults to \*(Aqminecraft:overworld=world/region\(cq\&.
+Show Minecraft server output\&.
+.sp
+Since this option depends on a Minecraft feature that Mojang considers experimental, it is subject to change\&.
 .RE
 .SH "AUTHORS"
 .sp
