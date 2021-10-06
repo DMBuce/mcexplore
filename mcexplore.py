@@ -286,7 +286,7 @@ def setSpawn(level, coords):
     f.write_file(level)
 
 def getDimensions(level):
-    """Copies the generator settings for a dimension in level.dat to the overworld"""
+    """Gets the generator settings for a dimension in level.dat"""
     data = nbt.NBTFile(level,'rb')["Data"]
     return [ key for key in data["WorldGenSettings"]["dimensions"] ]
 
