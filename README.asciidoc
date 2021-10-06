@@ -56,16 +56,16 @@ Usage
 
 Always take a backup before running mcexplore against your world.
 
-If you're generating a custom dimension with a data pack, make sure that
-you can load the dimension with e.g.
-`/execute in namespace:dimension_id run teleport @p ~ ~ ~`, then shut the
-server down before running mcexplore.
-
 Recent server jars require agreeing to the
 link:https://account.mojang.com/documents/minecraft_eula[Minecraft End User License Agreement (EULA)].
 You can agree to the EULA by setting `eula=true` in `eula.txt`.
 If mcexplore exits with an error about the EULA despite using an old server jar
 that does not require it, make sure `eula.txt` is not in your server folder.
+
+If you're generating a custom dimension with a data pack, make sure that
+you can load the dimension with e.g.
+`/execute in namespace:dimension_id run teleport @p ~ ~ ~`, then shut the
+server down before running mcexplore.
 
 If mcexplore is in your PATH, your server jar is named `minecraft_server.jar`,
 and you want to pregenerate 63x63 chunks (1008x1008 blocks) centered on spawn,
