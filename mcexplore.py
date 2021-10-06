@@ -65,7 +65,6 @@ is also used as the value for <zsize>.
         'z': "The Z offset to generate land around. Default: The server spawn",
         'r': "Use units of regions (32x32 chunks) instead of chunks for <xsize> and <zsize>.",
         'd': "The ID and region folder of the dimension to generate. Default: 'minecraft:overworld=world/region'",
-        'e': "Agree to the Minecraft End User License Agreement: <https://account.mojang.com/documents/minecraft_eula>",
     }
     parser.add_option(
         "-V", "--version", help=opthelp['V'],
@@ -94,10 +93,6 @@ is also used as the value for <zsize>.
     parser.add_option(
         "-z", dest="zorigin", help=opthelp['z'],
         default=None, type="int"
-    )
-    parser.add_option(
-        "--agree-to-eula", help=opthelp['e'],
-        dest="eula", default=False, action="store_true"
     )
     parser.add_option(
         "-q", "--quiet", help=opthelp['q'],
@@ -165,7 +160,7 @@ is also used as the value for <zsize>.
         sys.exit(1)
 
     # check if backup of level.dat or renamed region folder already exist
-    for dirpath, dirnames, filenames in os.walk(path):
+    for dirpath, dirnames, filenames in os.walk(options.path):
         if basenames['levelbak'] in filenames:
             err("Backup of %s already exists: %s" % ("level.dat", os.path.join(dirpath, basenames['levelbak'])))
             err()
@@ -177,16 +172,16 @@ is also used as the value for <zsize>.
             err("Either %s failed, was interrupted, or is still running." % prog)
             sys.exit(1)
 
-    # agree to eula
-    if options.eula:
-        # overwrite eula.txt with eula=true
-        eula = os.path.join(options.path, "eula.txt")
-        with open(eula, "w") as f:
-            f.write("eula=true\n")
-
     # start and stop server if server.properties doesn't exist
     if not os.path.isfile(serverprops):
+        msg("Generating server files")
         runMinecraft(options.path, options.command, mcoutput)
+
+    # warn the user if the EULA hasn't been accepted
+    eula = os.path.join(options.path, "eula.txt")
+    if not checkEulaAccepted(eula):
+        err("You have not agreed to the Minecraft End User License Agreement: %s" % (eula))
+        sys.exit(1)
 
     # get server properties
     if os.path.isfile(serverprops):
@@ -202,7 +197,13 @@ is also used as the value for <zsize>.
 
     # start and stop server if level.dat doesn't exist
     if not os.path.isfile(level):
+        msg("Generating server files")
         runMinecraft(options.path, options.command, mcoutput)
+
+    # warn the user if the EULA hasn't been accepted
+    if not checkEulaAccepted(options.path):
+        err("You have not agreed to the Minecraft End User License Agreement: %s" % (eula))
+        sys.exit(1)
 
     # make sure level.dat exists
     if not os.path.isfile(level):
@@ -351,6 +352,13 @@ def parseConfig(filename):
             (key, sep, val) = line.partition("=")
             properties[key] = val
     return properties
+
+def checkEulaAccepted(eula):
+    if os.path.isfile(eula):
+        with open(eula, "r") as file:
+            if "eula=false\n" in file:
+                return False
+    return True
 
 if __name__ == "__main__":
     main()
