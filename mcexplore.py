@@ -45,7 +45,7 @@ def main():
 
     # define vars
     prog = os.path.basename(sys.argv[0])
-    version = "%prog 1.8"
+    version = f"{prog} 1.8"
     usage = "Usage: %prog [options] <xsize> [zsize]"
     description = """\
 Uses a Minecraft server to pregenerate a square section of the world.
@@ -59,8 +59,9 @@ is also used as the value for <zsize>.
     }
 
     # parse options
-    parser = optparse.OptionParser(version=version, usage=usage, description=description)
+    parser = optparse.OptionParser(usage=usage, description=description)
     opthelp = {
+        'V': "Show version and exit.",
         'v': "Show minecraft server output.",
         'q': "Suppress minecraft server output. This is the default behavior.",
         'p': "The working directory to use when running the server. Default: '.'",
@@ -71,6 +72,10 @@ is also used as the value for <zsize>.
         'd': "The ID and region folder of the dimension to generate. Default: 'minecraft:overworld=world/region'",
         'e': "Agree to the Minecraft End User License Agreement: <https://account.mojang.com/documents/minecraft_eula>",
     }
+    parser.add_option(
+        "-V", "--version", help=opthelp['V'],
+        dest="version", default=False, action="store_true"
+    )
     parser.add_option(
         "-c", "--command", help=opthelp['c'],
         dest="command", default="java -jar minecraft_server.jar nogui"
@@ -110,7 +115,10 @@ is also used as the value for <zsize>.
     (options, args) = parser.parse_args()
 
     # validate args and options
-    if len(args) == 0:
+    if options.version:
+        msg(version)
+        sys.exit(0)
+    elif len(args) == 0:
         parser.print_usage(file=sys.stderr)
         err("%s: error: argument xsize: no size given" % prog)
         sys.exit(1)
