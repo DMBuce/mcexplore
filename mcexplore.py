@@ -300,7 +300,7 @@ is also used as the value for <zsize>.
 
     # restore level.dat
     msg("Restoring %s with spawn of %d, %d, %d:" % ("level.dat", *originalspawn))
-    msg("  '%s' -> '%s'" % (level, levelbak))
+    msg("  '%s' -> '%s'" % (levelbak, level))
     os.remove(level)
     os.rename(levelbak, level)
 
