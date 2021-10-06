@@ -1,13 +1,7 @@
 #!/bin/bash
 # update version every commit
 
-pkgver() {
-  if ! git describe --tags 2>/dev/null; then
-    echo "0.r$(git rev-list --count HEAD).g$(git rev-parse --short HEAD)"
-  fi | sed 's/-/.r/; s/-/./g'
-}
-
-version="$(pkgver)+1"
+version="$(git describe --tags | sed 's/-/./g')+1"
 echo "Updating version to $version"
 sed -i "/version =/ s/=.*/= f'{prog} $version'/" mcexplore.py
 

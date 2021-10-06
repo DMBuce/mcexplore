@@ -40,7 +40,7 @@ def main():
 
     # define vars
     prog = os.path.basename(sys.argv[0])
-    version = f"{prog} 1.8"
+    version = f'{prog} 2.1.g4fe5853+1'
     usage = "Usage: %prog [options] <xsize> [zsize]"
     description = """\
 Uses a Minecraft server to pregenerate a square section of the world.
