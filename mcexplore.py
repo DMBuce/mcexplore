@@ -53,6 +53,10 @@ Uses a Minecraft server to pregenerate a square section of the world.
 and must be greater than 25 chunks. If only <xsize> is specified, it
 is also used as the value for <zsize>.
 """
+    basenames = {
+        'levelbak': "level.dat.explorebackup",
+        'regionbak': "region.explorerename-overworld",
+    }
 
     # parse options
     parser = optparse.OptionParser(version=version, usage=usage, description=description)
@@ -65,7 +69,7 @@ is also used as the value for <zsize>.
         'z': "The Z offset to generate land around. Default: The server spawn",
         'r': "Use units of regions (32x32 chunks) instead of chunks for <xsize> and <zsize>.",
         'd': "The ID and region folder of the dimension to generate. Default: 'minecraft:overworld=world/region'",
-        'i': "Initialize the server files by starting and stopping the server before doing anything else.",
+        'i': "Starts and stops the server if server.properties or level.dat don't exist.",
         'I': "Disables --init. This is the default behavior.",
         'e': "Agree to the Minecraft End User License Agreement: <https://account.mojang.com/documents/minecraft_eula>",
     }
@@ -167,15 +171,28 @@ is also used as the value for <zsize>.
         err("The area to generate must be 26x26 chunks or larger.")
         sys.exit(1)
 
+    # check if backup of level.dat or renamed region folder already exist
+    for dirpath, dirnames, filenames in os.walk(path):
+        if basenames['levelbak'] in filenames:
+            err("Backup of %s already exists: %s" % ("level.dat", os.path.join(dirpath, basenames['levelbak'])))
+            err()
+            err("Either %s failed, was interrupted, or is still running." % prog)
+            sys.exit(1)
+        elif basenames['regionbak'] in dirnames:
+            err("Renamed overworld folder already exists: %s" % os.path.join(dirpath, basenames['regionbak']))
+            err()
+            err("Either %s failed, was interrupted, or is still running." % prog)
+            sys.exit(1)
+
     # agree to eula
-    eula = os.path.join(options.path, "eula.txt")
     if options.eula:
         # overwrite eula.txt with eula=true
+        eula = os.path.join(options.path, "eula.txt")
         with open(eula, "w") as f:
             f.write("eula=true\n")
 
-    # init server
-    if options.init:
+    # init server if server.properties doesn't exist
+    if options.init and not os.path.isfile(serverprops):
         runMinecraft(options.path, options.command, mcoutput)
 
     # get server properties
@@ -198,6 +215,10 @@ is also used as the value for <zsize>.
         err("Use --init to generate it.")
         sys.exit(1)
 
+    # init server if level.dat doesn't exist
+    if options.init and not os.path.isfile(level):
+        runMinecraft(options.path, options.command, mcoutput)
+
     # make sure dimension is defined
     if dimension != "minecraft:overworld" and dimension not in getDimensions(level):
         err("Dimension not defined in %s: '%s'" % ("level.dat", dimension))
@@ -206,19 +227,7 @@ is also used as the value for <zsize>.
     # figure out full path to region folders
     regionfolder = os.path.join(options.path, regionfolder)
     origfolder = os.path.join(options.path, "world", "region")
-    origfolderbak = os.path.join(options.path, "world", "region.explorerename-overworld")
-
-    # check if backup of level.dat or renamed region folder already exist
-    if os.path.isfile(levelbak):
-        err("Backup of %s already exists: %s" % ("level.dat", levelbak))
-        err()
-        err("Either %s failed, was interrupted, or is still running." % prog)
-        sys.exit(1)
-    elif os.path.isdir(origfolderbak):
-        err("Renamed overworld folder already exists: %s" % origfolderbak)
-        err()
-        err("Either %s failed, was interrupted, or is still running." % prog)
-        sys.exit(1)
+    origfolderbak = os.path.join(options.path, "world", basenames['regionbak'])
 
     # back up level.dat
     originalspawn = getSpawn(level)
@@ -331,7 +340,7 @@ def setDimension(level, dim):
     f.write_file(level)
 
 def runMinecraft(path, command, outstream):
-    """Starts and stops a minecraft server"""
+    """Starts and stops the minecraft server"""
     mc = subprocess.Popen(command.split(), cwd=path, stdin=subprocess.PIPE, stdout=outstream, universal_newlines=True)
     mc.communicate("stop\n")
     if mc.wait() != 0:
