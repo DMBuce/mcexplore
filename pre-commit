@@ -1,7 +1,7 @@
 #!/bin/bash
 # update version every commit
 
-version="$(git describe --tags | sed 's/-/./g')+1"
+version="2.$(git rev-list --count HEAD).g$(git rev-parse --short HEAD)+1"
 echo "Updating version to $version"
 sed -i "/version =/ s/=.*/= f'{prog} $version'/" mcexplore.py
 
