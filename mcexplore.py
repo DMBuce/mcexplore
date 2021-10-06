@@ -64,7 +64,8 @@ is also used as the value for <zsize>.
         'x': "The X offset to generate land around. Default: The server spawn",
         'z': "The Z offset to generate land around. Default: The server spawn",
         'r': "Use units of regions (32x32 chunks) instead of chunks for <xsize> and <zsize>.",
-        'd': "The ID and region folder of the dimension to generate. Default: 'minecraft:overworld=world/region'"
+        'd': "The ID and region folder of the dimension to generate. Default: 'minecraft:overworld=world/region'",
+        'e': "Agree to the Minecraft End User License Agreement: <https://account.mojang.com/documents/minecraft_eula>",
     }
     parser.add_option(
         "-c", "--command", help=opthelp['c'],
@@ -89,6 +90,10 @@ is also used as the value for <zsize>.
     parser.add_option(
         "-z", dest="zorigin", help=opthelp['z'],
         default=None, type="int"
+    )
+    parser.add_option(
+        "--agree-to-eula", help=opthelp['e'],
+        dest="eula", default=False, action="store_true"
     )
     parser.add_option(
         "-q", "--quiet", help=opthelp['q'],
@@ -151,6 +156,13 @@ is also used as the value for <zsize>.
         err()
         err("The area to generate must be 26x26 chunks or larger.")
         sys.exit(1)
+
+    # agree to eula
+    eula = os.path.join(options.path, "eula.txt")
+    if options.eula:
+        # overwrite eula.txt with eula=true
+        with open(eula, "w") as f:
+            f.write("eula=true\n")
 
     # use server.properties to figure out path to level.dat and backup file
     properties = parseConfig(serverprops)
