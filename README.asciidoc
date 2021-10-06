@@ -56,11 +56,7 @@ Usage
 
 Always take a backup before running mcexplore against your world.
 
-Before running mcexplore, make sure that the minecraft server isn't running
-and that the server directory contains valid files for `server.properties`,
-`world/level.dat`, `eula.txt`, and the server jar.
-
-If you're generating a custom dimension with a data pack, also make sure that
+If you're generating a custom dimension with a data pack, make sure that
 you can load the dimension with e.g.
 `/execute in namespace:dimension_id run teleport @p ~ ~ ~`, then shut the
 server down before running mcexplore.
