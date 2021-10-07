@@ -39,7 +39,7 @@ def getParser():
 
     # set some vars
     prog = "mcexplore"
-    version = f'{prog} 2.119.g96eb025+1'
+    version = f'{prog} 2.120.gea740ff+1'
     description = "Use a minecraft server jar to generate a rectangular section of the world."
     basenames = {
         'levelbak': "level.dat.explorebackup",
