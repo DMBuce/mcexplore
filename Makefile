@@ -57,8 +57,16 @@ install: $(INSTALL_DIRS) doc $(DESTDIR)$(bindir)/mcexplore $(DESTDIR)$(man1dir)/
 .PHONY: html
 html: mcexplore.1.html
 
-%.1: %.1.txt
-	a2x --no-xmllint -d manpage -f manpage --asciidoc-opts="-d manpage" $<
+mcexplore.1: mcexplore.py
+	argparse-manpage \
+		--pyfile $< \
+		--function getParser \
+		--author 'DMBuce <https://github.com/DMBuce> and similardilemma' \
+		--author-email 'https://github.com/similardilemma' \
+		--project-name mcexplore \
+		--url https://github.com/dmbuce/mcexplore \
+		> mcexplore.1
+	sed -i '1s/.*/.TH MCEXPLORE "1" $(shell date +%F) "\\ \\\&" "\\ \\\&"/' mcexplore.1
 
 $(DESTDIR)$(bindir)/mcexplore: mcexplore.py
 	$(INSTALL) -m755 $< $@

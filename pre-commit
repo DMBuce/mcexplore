@@ -21,3 +21,7 @@ elif updatever; git diff mcexplore.py | grep -q -e '^[+-] *version ='; then
 	exit 1
 fi
 
+# update man page
+make doc
+git add mcexplore.1
+

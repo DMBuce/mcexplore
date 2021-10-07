@@ -1,121 +1,67 @@
-'\" t
-.\"     Title: mcexplore
-.\"    Author: [see the "Authors" section]
-.\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 10/06/2021
-.\"    Manual: \ \&
-.\"    Source: \ \&
-.\"  Language: English
-.\"
-.TH "MCEXPLORE" "1" "10/06/2021" "\ \&" "\ \&"
-.\" -----------------------------------------------------------------
-.\" * Define some portability stuff
-.\" -----------------------------------------------------------------
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.\" http://bugs.debian.org/507673
-.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.ie \n(.g .ds Aq \(aq
-.el       .ds Aq '
-.\" -----------------------------------------------------------------
-.\" * set default formatting
-.\" -----------------------------------------------------------------
-.\" disable hyphenation
-.nh
-.\" disable justification (adjust text to left margin only)
-.ad l
-.\" -----------------------------------------------------------------
-.\" * MAIN CONTENT STARTS HERE *
-.\" -----------------------------------------------------------------
-.SH "NAME"
-mcexplore \- Use a Minecraft server to generate a square of land\&.
-.SH "SYNOPSIS"
-.sp
-\fImcexplore\fR [options] <xsize> [zsize]
-.SH "DESCRIPTION"
-.sp
-mcexplore uses a Minecraft server to generate square land of a specified size, measured in chunks (16x16 blocks) or regions (32x32 chunks)\&. \fIxsize\fR and \fIzsize\fR are the extent of the rectangle in the x and z direction, respectively, and must be greater than 25 chunks\&. If only \fIxsize\fR is specified, it is used for both \fIxsize\fR and \fIzsize\fR\&.
-.SH "OPTIONS"
-.PP
-\fB\-h, \-\-help\fR
-.RS 4
-Show this help message and exit\&.
-.RE
-.PP
-\fB\-\-version\fR
-.RS 4
-Show version number and exit\&.
-.RE
-.PP
-\fB\-c, \-\-command\fR <command>
-.RS 4
-Specifies the
-\fIcommand\fR
-used to start the server\&. Defaults to \*(Aqjava \-jar minecraft_server\&.jar nogui\*(Aq\&.
-.RE
-.PP
-\fB\-d, \-\-dimension\fR <id>=<folder>
-.RS 4
-Set the ID and region folder of the dimension to generate\&. Relative folder paths are interpreted relative to \(oq\-\-path`\&. Defaults to \*(Aqminecraft:overworld=world/region\(cq\&.
-.RE
-.PP
-\fB\-p, \-\-path\fR <path>
-.RS 4
-Sets the
-\fIpath\fR
-of the working directory to use when running the server\&. Defaults to the current directory (\&.)\&.
-.RE
-.PP
-\fB\-r, \-\-regions\fR
-.RS 4
-When enabled, measure in regions instead of chunks\&.
-.RE
-.PP
-\fB\-x\fR <xorigin>
-.RS 4
-Set the X offset to generate land around\&. Defaults to the server\(cqs spawn point\&.
-.RE
-.PP
-\fB\-z\fR <zorigin>
-.RS 4
-Set the Z offset to generate land around\&. Defaults to the server\(cqs spawn point\&.
-.RE
-.PP
-\fB\-q, \-\-quiet\fR
-.RS 4
-Don\(cqt show Minecraft server output\&. This is the default behavior\&.
-.RE
-.PP
-\fB\-v, \-\-verbose\fR
-.RS 4
-Show Minecraft server output\&.
-.sp
-Since this option depends on a Minecraft feature that Mojang considers experimental, it is subject to change\&.
-.RE
-.SH "AUTHORS"
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-DMBuce
-https://github\&.com/DMBuce
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-similardilemma
-https://github\&.com/similardilemma
-.RE
-.sp
-To see a full list of contributors, use git shortlog \-s in the mcexplore git repository located at https://github\&.com/DMBuce/mcexplore\&.
+.TH MCEXPLORE "1" 2021-10-07 "\ \&" "\ \&"
+.SH NAME
+mcexplore
+.SH SYNOPSIS
+.B mcexplore
+[-c COMMAND] [-d DIMENSION] [-p PATH] [-r] [-x XORIGIN] [-z ZORIGIN] [-q] [-v] [-V] [-h] xsize [zsize]
+.SH DESCRIPTION
+Use a minecraft server jar to generate a rectangular section of the world.
+.SH OPTIONS
+.TP
+\fBxsize\fR
+The size to generate in the x direction. Measured in chunks (16x16 blocks) by
+default (but see the \-r option, below). Must be greater than 25 chunks.
+
+.TP
+\fBzsize\fR
+The size to generate in the z direction. Measured in chunks (16x16 blocks) by
+default (but see the \-r option, below). Must be greater than 25 chunks.
+Defaults to the value provided for 'xsize'.
+
+.TP
+\fB\-c\fR \fI\,COMMAND\/\fR, \fB\-\-command\fR \fI\,COMMAND\/\fR
+The command used to start the server. Defaults to 'java \-jar
+minecraft_server.jar nogui'.
+
+.TP
+\fB\-d\fR \fI\,DIMENSION\/\fR, \fB\-\-dimension\fR \fI\,DIMENSION\/\fR
+The ID and region folder of the dimension to generate. Relative folder paths
+are interpreted relative to '\-\-path'. Defaults to
+'minecraft:overworld=world/region'.
+
+.TP
+\fB\-p\fR \fI\,PATH\/\fR, \fB\-\-path\fR \fI\,PATH\/\fR
+The working directory to use when running the server. Defaults to the current
+directory (.).
+
+.TP
+\fB\-r\fR, \fB\-\-regions\fR
+Use units of regions (32x32 chunks) instead of chunks for 'xsize' and 'zsize'.
+
+.TP
+\fB\-x\fR \fI\,XORIGIN\/\fR
+The X offset to generate land around. Defaults to the server spawn point.
+
+.TP
+\fB\-z\fR \fI\,ZORIGIN\/\fR
+The Z offset to generate land around. Defaults to the server spawn point.
+
+.TP
+\fB\-q\fR, \fB\-\-quiet\fR
+Suppress minecraft server output. This is the default behavior.
+
+.TP
+\fB\-v\fR, \fB\-\-verbose\fR
+Show minecraft server output.
+
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+Show version number and exit.
+
+.SH AUTHORS
+.B mcexplore
+was written by DMBuce <https://github.com/DMBuce> and similardilemma <https://github.com/similardilemma>.
+.SH DISTRIBUTION
+The latest version of mcexplore may be downloaded from
+.UR https://github.com/dmbuce/mcexplore
+.UE

@@ -35,12 +35,11 @@ except ImportError:
     err("\thttps://github.com/dmbuce/mcexplore#install")
     sys.exit(1)
 
-def main():
-    """Main entry point for the script"""
+def getParser():
 
-    # define vars
-    prog = os.path.basename(sys.argv[0])
-    version = f'{prog} 2.116.g92dc73f+1'
+    # set some vars
+    prog = "mcexplore"
+    version = f'{prog} 2.117.gad01aa4+1'
     description = "Use a minecraft server jar to generate a rectangular section of the world."
     basenames = {
         'levelbak': "level.dat.explorebackup",
@@ -110,17 +109,24 @@ def main():
         "-h", "--help", help=opthelp['h'],
         action="help"
     )
+
+    return parser
+
+def main():
+    """Main entry point for the script"""
+
+    # parse args
+    parser = getParser()
+    prog = parser.prog
     args = parser.parse_args()
+    xsize = args.xsize
+    zsize = args.zsize if args.zsize else args.xsize
 
     # validate args
     if "=" not in args.dimension:
         parser.print_usage(file=sys.stderr)
         err("%s: error: argument -d: dimension not specified as 'id=folder': '%s'" % (prog, args.dimension.replace("'", "\\'")))
         sys.exit(1)
-
-    # parse args
-    xsize = args.xsize
-    zsize = args.zsize if args.zsize else args.xsize
 
     # set some vars
     multiplier = 512 if args.regions else 16
