@@ -93,9 +93,9 @@ To do the same in a more verbose way,
 Documentation
 -------------
 
-A complete description of mcexplore's options and command line arguments is
-available in its help output (`mcexplore --help`),
-it manual page (`man ./mcexplore.1`), or at
+The available command line options and arguments can be viewed
+in mcexplore's help output with `mcexplore --help`,
+its manual page with `man ./mcexplore.1`, or in a browser at
 https://dmbuce.github.io/mcexplore/mcexplore.1.html .
 
 Project documentation can be found in these files:
