@@ -40,7 +40,7 @@ def main():
 
     # define vars
     prog = os.path.basename(sys.argv[0])
-    version = f'{prog} 2.110.gbf3b666+1'
+    version = f'{prog} 2.112.g4890213+1'
     usage = "Usage: %prog [options] <xsize> [zsize]"
     description = """\
 Uses a Minecraft server to pregenerate a square section of the world.
@@ -374,4 +374,3 @@ def checkEulaAccepted(eula):
 if __name__ == "__main__":
     main()
 
-# test
