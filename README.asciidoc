@@ -93,8 +93,8 @@ To do the same in a more verbose way,
 Documentation
 -------------
 
-The manual page for mcexplore is kept in AsciiDoc format in mcexplore.1.txt.
-You can view it in a text editor, with `make doc; man ./mcexplore.1`, or at 
+The manual page for mcexplore is included in the git repository.
+You can view it with `man ./mcexplore.1` or at
 https://dmbuce.github.io/mcexplore/mcexplore.1.html .
 
 Project documentation can be found in these files:
