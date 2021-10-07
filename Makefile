@@ -66,7 +66,7 @@ mcexplore.1: mcexplore.py
 		--project-name mcexplore \
 		--url https://github.com/dmbuce/mcexplore \
 		> mcexplore.1
-	sed -i '1s/.*/.TH MCEXPLORE "1" $(shell date +%F) "\\ \\\&" "\\ \\\&"/' mcexplore.1
+	$(SED_INPLACE) '1s/.*/.TH MCEXPLORE "1" $(shell date +%F) "\\ \\\&" "\\ \\\&"/' mcexplore.1
 
 $(DESTDIR)$(bindir)/mcexplore: mcexplore.py
 	$(INSTALL) -m755 $< $@
@@ -77,6 +77,6 @@ $(DESTDIR)$(man1dir)/mcexplore.1: mcexplore.1
 $(INSTALL_DIRS):
 	$(INSTALL) -d $@
 
-%.html: %.txt
-	asciidoc -a toc -a icons -a max-width=960px $<
+%.html: %
+	groff -mandoc -Thtml < $< > $@
 
