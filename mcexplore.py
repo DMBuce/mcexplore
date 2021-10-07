@@ -11,7 +11,7 @@ from __future__ import print_function
 import os
 import sys
 import shutil
-import optparse
+import argparse
 import subprocess
 import math
 import time
@@ -40,110 +40,103 @@ def main():
 
     # define vars
     prog = os.path.basename(sys.argv[0])
-    version = f'{prog} 2.115.gbc40ac6+1'
-    usage = "Usage: %prog [options] <xsize> [zsize]"
-    description = """\
-Uses a Minecraft server to pregenerate a square section of the world.
-<xsize> and <zsize> are in units of chunks (16x16 blocks) by default,
-and must be greater than 25 chunks. If only <xsize> is specified, it
-is also used as the value for <zsize>.
-"""
+    version = f'{prog} 2.116.g92dc73f+1'
+    description = "Use a minecraft server jar to generate a rectangular section of the world."
     basenames = {
         'levelbak': "level.dat.explorebackup",
         'regionbak': "region.explorerename-overworld",
     }
 
-    # parse options
-    parser = optparse.OptionParser(usage=usage, description=description)
+    # parse args
+    parser = argparse.ArgumentParser(prog=prog, description=description, add_help=False)
     opthelp = {
-        'V': "Show version and exit.",
-        'v': "Show minecraft server output.",
+        'xsize': 'The size to generate in the x direction. Measured in chunks (16x16 blocks) by default (but see the -r option, below). Must be greater than 25 chunks.',
+        'zsize': "The size to generate in the z direction. Measured in chunks (16x16 blocks) by default (but see the -r option, below). Must be greater than 25 chunks. Defaults to the value provided for 'xsize'.",
+        'V': "Show version number and exit.",
+        'h': "Show this help message and exit.",
+        'c': "The command used to start the server. Defaults to 'java -jar minecraft_server.jar nogui'.",
+        'd': "The ID and region folder of the dimension to generate. Relative folder paths are interpreted relative to '--path'. Defaults to 'minecraft:overworld=world/region'.",
+        'p': "The working directory to use when running the server. Defaults to the current directory (.).",
+        'r': "Use units of regions (32x32 chunks) instead of chunks for 'xsize' and 'zsize'.",
+        'x': "The X offset to generate land around. Defaults to the server spawn point.",
+        'z': "The Z offset to generate land around. Defaults to the server spawn point.",
         'q': "Suppress minecraft server output. This is the default behavior.",
-        'p': "The working directory to use when running the server. Default: '.'",
-        'c': "The command used to start the server. Default: 'java -jar minecraft_server.jar nogui'",
-        'x': "The X offset to generate land around. Default: The server spawn",
-        'z': "The Z offset to generate land around. Default: The server spawn",
-        'r': "Use units of regions (32x32 chunks) instead of chunks for <xsize> and <zsize>.",
-        'd': "The ID and region folder of the dimension to generate. Default: 'minecraft:overworld=world/region'",
+        'v': "Show minecraft server output.",
     }
-    parser.add_option(
-        "-V", "--version", help=opthelp['V'],
-        dest="version", default=False, action="store_true"
+    parser.add_argument(
+        'xsize', type=int, help=opthelp['xsize']
     )
-    parser.add_option(
+    parser.add_argument(
+        'zsize', type=int, help=opthelp['zsize'],
+        nargs='?', default=None
+    )
+    parser.add_argument(
         "-c", "--command", help=opthelp['c'],
-        dest="command", default="java -jar minecraft_server.jar nogui"
+        default="java -jar minecraft_server.jar nogui"
     )
-    parser.add_option(
+    parser.add_argument(
         "-d", "--dimension", help=opthelp['d'],
-        dest="dimension", default="minecraft:overworld=world/region"
+        default="minecraft:overworld=world/region"
     )
-    parser.add_option(
+    parser.add_argument(
         "-p", "--path", help=opthelp['p'],
-        dest="path", default="."
+        default="."
     )
-    parser.add_option(
+    parser.add_argument(
         "-r", "--regions", help=opthelp['r'],
-        dest="regions", default=False, action="store_true"
+        default=False, action="store_true"
     )
-    parser.add_option(
+    parser.add_argument(
         "-x", dest="xorigin", help=opthelp['x'],
-        default=None, type="int"
+        default=None, type=int
     )
-    parser.add_option(
+    parser.add_argument(
         "-z", dest="zorigin", help=opthelp['z'],
-        default=None, type="int"
+        default=None, type=int
     )
-    parser.add_option(
+    parser.add_argument(
         "-q", "--quiet", help=opthelp['q'],
         dest="verbose", default=False, action="store_false"
     )
-    parser.add_option(
+    parser.add_argument(
         "-v", "--verbose", help=opthelp['v'],
         dest="verbose", default=False, action="store_true"
     )
-    (options, args) = parser.parse_args()
+    parser.add_argument(
+        "-V", "--version", help=opthelp['V'],
+        action="version", version=version
+    )
+    parser.add_argument(
+        "-h", "--help", help=opthelp['h'],
+        action="help"
+    )
+    args = parser.parse_args()
 
-    # validate args and options
-    if options.version:
-        msg(version)
-        sys.exit(0)
-    elif len(args) == 0:
+    # validate args
+    if "=" not in args.dimension:
         parser.print_usage(file=sys.stderr)
-        err("%s: error: argument xsize: no size given" % prog)
-        sys.exit(1)
-    elif not args[0].isdigit():
-        parser.print_usage(file=sys.stderr)
-        err("%s: error: argument xsize: invalid integer value: '%s'" % (prog, args[0].replace("'", "\\'")))
-        sys.exit(1)
-    elif len(args) > 1 and not args[1].isdigit():
-        parser.print_usage(file=sys.stderr)
-        err("%s: error: argument zsize: invalid integer value: '%s'" % (prog, args[0].replace("'", "\\'")))
-        sys.exit(1)
-    elif "=" not in options.dimension:
-        parser.print_usage(file=sys.stderr)
-        err("%s: error: option -d: dimension not specified as 'id=folder': '%s'" % (prog, options.dimension.replace("'", "\\'")))
+        err("%s: error: argument -d: dimension not specified as 'id=folder': '%s'" % (prog, args.dimension.replace("'", "\\'")))
         sys.exit(1)
 
     # parse args
-    xsize = int(args[0])
-    zsize = int(args[1]) if len(args) > 1 else int(args[0])
+    xsize = args.xsize
+    zsize = args.zsize if args.zsize else args.xsize
 
     # set some vars
-    multiplier = 512 if options.regions else 16
-    mcoutput = sys.stdout if options.verbose else DEVNULL
-    serverprops = os.path.join(options.path, 'server.properties')
-    (dimension, sep, regionfolder) = options.dimension.partition("=")
+    multiplier = 512 if args.regions else 16
+    mcoutput = sys.stdout if args.verbose else DEVNULL
+    serverprops = os.path.join(args.path, 'server.properties')
+    (dimension, sep, regionfolder) = args.dimension.partition("=")
     if ":" not in dimension:
         dimension = "minecraft:" + dimension
 
     # make sure sizes are reasonable
-    if options.regions and xsize < 2:
+    if args.regions and xsize < 2:
         err("xsize too small: %s" % xsize)
         err()
         err("The area to generate must be 2x2 regions or larger.")
         sys.exit(1)
-    elif options.regions and zsize < 2:
+    elif args.regions and zsize < 2:
         err("zsize too small: %s" % zsize)
         err()
         err("The area to generate must be 2x2 regions or larger.")
@@ -160,7 +153,7 @@ is also used as the value for <zsize>.
         sys.exit(1)
 
     # check if backup of level.dat or renamed region folder already exist
-    for dirpath, dirnames, filenames in os.walk(options.path):
+    for dirpath, dirnames, filenames in os.walk(args.path):
         if basenames['levelbak'] in filenames:
             err("Backup of %s already exists: %s" % ("level.dat", os.path.join(dirpath, basenames['levelbak'])))
             err()
@@ -175,10 +168,10 @@ is also used as the value for <zsize>.
     # start and stop server if server.properties doesn't exist
     if not os.path.isfile(serverprops):
         msg("Generating server files")
-        runMinecraft(options.path, options.command, mcoutput)
+        runMinecraft(args.path, args.command, mcoutput)
 
     # warn the user if the EULA hasn't been accepted
-    eula = os.path.join(options.path, "eula.txt")
+    eula = os.path.join(args.path, "eula.txt")
     if not checkEulaAccepted(eula):
         err("You have not agreed to the Minecraft End User License Agreement: %s" % (eula))
         sys.exit(1)
@@ -195,24 +188,24 @@ is also used as the value for <zsize>.
         # the server recreates missing properties with default values,
         # so try to run the server and then check again
         msg("Generating server files")
-        runMinecraft(options.path, options.command, mcoutput)
+        runMinecraft(args.path, args.command, mcoutput)
         properties = parseConfig(serverprops)
         if 'level-name' not in properties:
             err("Property 'level-name' is not defined: %s" % serverprops)
             sys.exit(1)
 
     # figure out path to level.dat and backup file
-    world = os.path.join(options.path, properties['level-name'])
+    world = os.path.join(args.path, properties['level-name'])
     level = os.path.join(world, "level.dat")
     levelbak = os.path.join(world, "level.dat.explorebackup")
 
     # start and stop server if level.dat doesn't exist
     if not os.path.isfile(level):
         msg("Generating server files")
-        runMinecraft(options.path, options.command, mcoutput)
+        runMinecraft(args.path, args.command, mcoutput)
 
     # warn the user if the EULA hasn't been accepted
-    if not checkEulaAccepted(options.path):
+    if not checkEulaAccepted(args.path):
         err("You have not agreed to the Minecraft End User License Agreement: %s" % (eula))
         sys.exit(1)
 
@@ -227,9 +220,9 @@ is also used as the value for <zsize>.
         sys.exit(1)
 
     # figure out full path to region folders
-    regionfolder = os.path.join(options.path, regionfolder)
-    origfolder = os.path.join(options.path, "world", "region")
-    origfolderbak = os.path.join(options.path, "world", basenames['regionbak'])
+    regionfolder = os.path.join(args.path, regionfolder)
+    origfolder = os.path.join(args.path, "world", "region")
+    origfolderbak = os.path.join(args.path, "world", basenames['regionbak'])
 
     # back up level.dat
     originalspawn = getSpawn(level)
@@ -259,8 +252,8 @@ is also used as the value for <zsize>.
         setDimension(level, dimension)
 
     # figure out origin
-    if options.xorigin is None: options.xorigin = originalspawn[0]
-    if options.zorigin is None: options.zorigin = originalspawn[2]
+    if args.xorigin is None: args.xorigin = originalspawn[0]
+    if args.zorigin is None: args.zorigin = originalspawn[2]
 
     # move the origin to the nearest valid center point
     # this will be a region or chunk center, the center of a region or chunk border,
@@ -268,9 +261,9 @@ is also used as the value for <zsize>.
     # this is not strictly necessary when measuring in chunks, but doesn't hurt
     xoffset = (xsize % 2) * (multiplier / 2)
     zoffset = (zsize % 2) * (multiplier / 2)
-    options.xorigin = int(round(float(options.xorigin + xoffset) / float(multiplier))) * multiplier - xoffset
-    options.zorigin = int(round(float(options.zorigin + zoffset) / float(multiplier))) * multiplier - zoffset
-    msg("Snapped origin to %d, %d" % (options.xorigin, options.zorigin))
+    args.xorigin = int(round(float(args.xorigin + xoffset) / float(multiplier))) * multiplier - xoffset
+    args.zorigin = int(round(float(args.zorigin + zoffset) / float(multiplier))) * multiplier - zoffset
+    msg("Snapped origin to %d, %d" % (args.xorigin, args.zorigin))
 
     # the total size of spawn chunks along the x/z axis in blocks
     #
@@ -295,14 +288,14 @@ is also used as the value for <zsize>.
     xiterations = int(math.ceil(xblocks / spawnsize) + 1)
     ziterations = int(math.ceil(zblocks / spawnsize) + 1)
     for xcount in range(0, xiterations):
-        x = options.xorigin - xblocks / 2 + xcount * spawnsize
-        if x > options.xorigin + xblocks / 2: x = options.xorigin + xblocks / 2
+        x = args.xorigin - xblocks / 2 + xcount * spawnsize
+        if x > args.xorigin + xblocks / 2: x = args.xorigin + xblocks / 2
         for zcount in range(0, ziterations):
-            z = options.zorigin - zblocks / 2 + zcount * spawnsize
-            if z > options.zorigin + zblocks / 2: z = options.zorigin + zblocks / 2
+            z = args.zorigin - zblocks / 2 + zcount * spawnsize
+            if z > args.zorigin + zblocks / 2: z = args.zorigin + zblocks / 2
             msg("Setting spawn to %d, %d" % (x, z))
             setSpawn(level, (int(x), 64, int(z)))
-            runMinecraft(options.path, options.command, mcoutput)
+            runMinecraft(args.path, args.command, mcoutput)
 
     # restore dimension
     if not os.path.samefile(regionfolder, origfolder):
