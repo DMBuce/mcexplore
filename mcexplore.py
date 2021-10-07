@@ -40,7 +40,7 @@ def main():
 
     # define vars
     prog = os.path.basename(sys.argv[0])
-    version = f'{prog} 2.109.g8c2207f+1'
+    version = f'{prog} 2.110.gbf3b666+1'
     usage = "Usage: %prog [options] <xsize> [zsize]"
     description = """\
 Uses a Minecraft server to pregenerate a square section of the world.
@@ -189,6 +189,17 @@ is also used as the value for <zsize>.
     else:
         err("File not found: %s" % serverprops)
         sys.exit(1)
+
+    # make sure level-name is defined
+    if 'level-name' not in properties:
+        # the server recreates missing properties with default values,
+        # so try to run the server and then check again
+        msg("Generating server files")
+        runMinecraft(options.path, options.command, mcoutput)
+        properties = parseConfig(serverprops)
+        if 'level-name' not in properties:
+            err("Property 'level-name' is not defined: %s" % serverprops)
+            sys.exit(1)
 
     # figure out path to level.dat and backup file
     world = os.path.join(options.path, properties['level-name'])
@@ -363,3 +374,4 @@ def checkEulaAccepted(eula):
 if __name__ == "__main__":
     main()
 
+# test
