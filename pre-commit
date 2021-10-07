@@ -3,8 +3,5 @@
 
 version="2.$(git rev-list --count HEAD).g$(git rev-parse --short HEAD)+1"
 echo "Updating version to $version"
-git stash -- mcexplore.py
 sed -i "/version =/ s/=.*/= f'{prog} $version'/" mcexplore.py
-git add mcexplore.py
-git stash apply
 
