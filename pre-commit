@@ -2,7 +2,7 @@
 # update version every commit
 
 # update version
-version="2.$(git rev-list --count HEAD).g$(git rev-parse --short HEAD)+1"
+version="2.$(( $(git rev-list --count HEAD)+1 )).g$(git rev-parse --short HEAD)+1"
 updatever() {
 	echo "Updating version to $version"
 	sed -i "/version =/ s/=.*/= f'{prog} $version'/" mcexplore.py
@@ -11,8 +11,8 @@ updatever() {
 # check if mcexplore.py has no un-added changes
 if ! git status --porcelain | grep -q '^.M mcexplore.py'; then
 	# update version and add mcexplore.py to commit
-	echo "Adding mcexplore.py to commit"
 	updatever
+	echo "Adding mcexplore.py to commit"
 	git add mcexplore.py
 # update version and check if it needs to be added to commit
 elif updatever; git diff mcexplore.py | grep -q -e '^[+-] *version ='; then
