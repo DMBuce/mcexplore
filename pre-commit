@@ -8,14 +8,15 @@ updatever() {
 	sed -i "/version =/ s/=.*/= f'{prog} $version'/" mcexplore.py
 }
 
-# check if mcexplore.py has no un-added changes
+# check if mcexplore.py has no unstaged changes
 if ! git status --porcelain | grep -q '^.M mcexplore.py'; then
 	# update version and add mcexplore.py to commit
 	updatever
 	echo "Adding mcexplore.py to commit"
 	git add mcexplore.py
-# update version and check if it needs to be added to commit
+# update the version and check if it changed
 elif updatever; git diff mcexplore.py | grep -q -e '^[+-] *version ='; then
+	# prompt user to add the updated version to the commit
 	echo "Please add the version change with \`git add -p mcexplore.py\` before committing."
 	exit 1
 fi
