@@ -39,12 +39,8 @@ def getParser():
 
     # set some vars
     prog = "mcexplore"
-    version = f'{prog} 2.122.gf700e33+1'
+    version = f'{prog} 2.125.g67748a2+1'
     description = "Use a minecraft server jar to generate a rectangular section of the world."
-    basenames = {
-        'levelbak': "level.dat.explorebackup",
-        'regionbak': "region.explorerename-overworld",
-    }
 
     # parse args
     parser = argparse.ArgumentParser(prog=prog, description=description, add_help=False)
@@ -121,6 +117,10 @@ def main():
     args = parser.parse_args()
     xsize = args.xsize
     zsize = args.zsize if args.zsize else args.xsize
+    basenames = {
+        'levelbak': "level.dat.explorebackup",
+        'regionbak': "region.explorerename-overworld",
+    }
 
     # validate args
     if "=" not in args.dimension:
