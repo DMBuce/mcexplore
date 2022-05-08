@@ -28,7 +28,7 @@ if git diff --name-only --cached | grep -q -xF mcexplore.py; then
 	# update the version and check if it changed
 	elif updatever; git diff mcexplore.py | grep -q -e '^[+-] *version ='; then
 		# prompt user to add the updated version to the commit
-		echo "Please add the version change with \`git add -p mcexplore.py\` before committing."
+		echo "Add the version change with \`git add -p mcexplore.py\` before committing."
 		exit 1
 	fi
 fi
