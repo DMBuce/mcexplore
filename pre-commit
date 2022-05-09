@@ -81,12 +81,12 @@ make doc
 #git add doc/* README.asciidoc
 git add mcexplore.1
 
-# unstage a file if the only lines in it that changed match a pattern
+# unstage a file if the only lines in it that changed start with a pattern
 file=mcexplore.1
 lname='.TH'
-pattern='^[+-]\.TH MCEXPLORE'
+pattern='\.TH MCEXPLORE'
 if ! git diff --cached "$file" \
-	| egrep -v -e "$pattern" -e '^[+-]{3}' \
+	| egrep -v -e "^[+-]$pattern" -e '^[+-]{3}' \
 	| grep -q '^[+-]'
 then
 	echo "Unstaging $file because only $lname changed..."
