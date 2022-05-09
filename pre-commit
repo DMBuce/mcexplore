@@ -34,10 +34,9 @@ then
 	exit 1
 fi
 
-# update the version to 2.$numcommits.g$prev+1,
-# where $prev = the commit before the current version
+# update the version to 2.$numcommits.g$prevcommit+1,
 #
-# to find the commit(s) corresponding to $prev+1:
+# to find the commit(s) corresponding to $prevcommit+1:
 #
 #    git rev-list --children --all | awk '/^$prev/ {print substr($2,1,7)}'
 #
