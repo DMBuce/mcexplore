@@ -73,13 +73,13 @@ then
 	fi
 fi
 
-## run tests
-#make check
-
 # update docs
 make doc
 #git add doc/* README.asciidoc
 git add mcexplore.1
+
+## run tests
+#make check
 
 # unstage a file if the only lines in it that changed start with a pattern
 file=mcexplore.1
