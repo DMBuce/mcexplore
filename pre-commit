@@ -1,7 +1,40 @@
 #!/bin/bash
-# update the version and docs every commit
+# called with no arguments by 'git commit'
 #
-# updates the docs and sets version in mcexplore.py to 2.$numcommits.g$prev+1,
+# if necessary, stops the commit by exiting with a non-zero exit status
+
+# redirect all output to stderr
+exec 1>&2
+
+# bail if a command fails
+set -e
+
+# figure out the commit to diff against
+against=HEAD
+# diff against an empty tree object if this is the initial commit
+if ! git rev-parse --verify HEAD &>/dev/null; then
+	against="$(git hash-object -t tree /dev/null)"
+fi
+
+# check for whitespace errors
+git diff-index --check --cached $against --
+
+# prevent non-ascii filenames from being added
+echo "Checking for non-ASCII filenames..."
+if git diff --cached --name-only --diff-filter=A -z $against \
+	| LC_ALL=C tr -d '[ -~]\0' \
+	| wc -c \
+	| grep -qvx 0
+then
+	# try to show files with non-ascii filenames
+	git diff --cached --name-only --diff-filter=A -z $against \
+		| tr '\0' '\n' \
+		| grep '[ -~]'
+	echo "Non-ASCII filenames detected. Rename them before committing."
+	exit 1
+fi
+
+# update the version to 2.$numcommits.g$prev+1,
 # where $prev = the commit before the current version
 #
 # to find the commit(s) corresponding to $prev+1:
@@ -9,31 +42,68 @@
 #    git rev-list --children --all | awk '/^$prev/ {print substr($2,1,7)}'
 #
 # or, check the Releases page on github and ctrl+f
-
-# update version
+verfile=mcexplore.py
+srcfiles=(
+	#src/*
+)
 updatever() {
+	#local oldver="$(sed -E -n "/version\s*=/ {s/.*version\s*=[\"']?//; s/[\"']$//;p;q}" "$verfile")"
+	##local oldver="$( "./$verfile" --version )"
+	#local newver="${oldver%.*}.$(( ${oldver##*.}+1 ))"
+	#echo "Updating version from $oldver to $newver..."
+	#sed -E -i "/version\s*=/ s/=.*/='$newver'/" "$verfile"
 	local version="2.$(( $(git rev-list --count HEAD)+1 )).g$(git rev-parse --short HEAD)+1"
 	echo "Updating version to $version"
 	sed -i "/version =/ s/=.*/= f'{prog} $version'/" mcexplore.py
 }
-
-# check if we're committing a change to mcexplore.py
-if git diff --name-only --cached | grep -q -xF mcexplore.py; then
-	# check if mcexplore.py has no unstaged changes
-	if ! git status --porcelain | grep -q '^.M mcexplore.py'; then
-		# update version and add mcexplore.py to commit
+# check if we're committing a change to a source file
+if git diff --name-only --cached \
+	| grep -q -xFf <(printf "%s\n" "$verfile" "${srcfiles[@]}")
+then
+	# check if $verfile has no unstaged changes
+	if ! git status --porcelain | grep -q "^.M $verfile"; then
+		# update version and add $verfile to commit
 		updatever
-		echo "Adding mcexplore.py to commit"
-		git add mcexplore.py
+		echo "Adding $verfile to commit..."
+		git add "$verfile"
 	# update the version and check if it changed
-	elif updatever; git diff mcexplore.py | grep -q -e '^[+-] *version ='; then
+	elif updatever; git diff "$verfile" | egrep -q '^[+-].*version\s*='; then
 		# prompt user to add the updated version to the commit
-		echo "Add the version change with \`git add -p mcexplore.py\` before committing."
+		echo "Add the version change with \`git add -p $verfile\` before committing."
 		exit 1
 	fi
 fi
 
-# update man page
+## run tests
+#make check
+
+# update docs
 make doc
+#git add doc/* README.asciidoc
 git add mcexplore.1
+
+## unstage PKGBUILD if only the pkgver changed
+#if ! git diff --cached PKGBUILD \
+#	| egrep -v -e '^[+-]\s*pkgver\s*=' -e '^[+-]{3}' \
+#	| grep -q '^[+-]'
+#then
+#	echo "Unstaging PKGBUILD because only \$pkgver changed..."
+#	git restore --staged PKGBUILD
+#fi
+
+## aur: update .SRCINFO, based on:
+## https://github.com/eli-schwartz/aurpublish/blob/master/pre-commit.hook
+#git diff --cached --name-status | grep -q "^[AM].*PKGBUILD" | while read M file; do
+#	dir="$(dirname "$file")"
+#	echo "Updating .SRCINFO metadata..."
+#	( cd "$dir" && makepkg --printsrcinfo > .SRCINFO )
+#	git add "$dir/.SRCINFO"
+#done
+
+## jekyll: update last_modified_at date in frontmatter
+#lastmodified="$(date -u "+%Y-%m-%d %T %Z")"
+#git diff --cached --name-status | grep "^[AM]" | while read M file; do
+#	sed -E -i "/^---/,/^---/ s/^(last_modified_at:).*/\1 $lastmodified/" "$file"
+#	git add "$file"
+#done
 
