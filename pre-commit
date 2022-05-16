@@ -79,7 +79,7 @@ make doc
 git add mcexplore.1
 
 ## run tests
-#make check
+#make -kB check
 
 # unstage a file if the only lines in it that changed start with a pattern
 file=mcexplore.1
