@@ -95,7 +95,7 @@ fi
 
 ## aur: update .SRCINFO, based on:
 ## https://github.com/eli-schwartz/aurpublish/blob/master/pre-commit.hook
-#git diff --cached --name-status | grep -q "^[AM].*PKGBUILD" | while read M file; do
+#git diff --cached --name-status | grep "^[AM].*PKGBUILD" | while read M file; do
 #	dir="$(dirname "$file")"
 #	echo "Updating .SRCINFO metadata..."
 #	( cd "$dir" && makepkg --printsrcinfo > .SRCINFO )
