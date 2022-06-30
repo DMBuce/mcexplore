@@ -10,6 +10,7 @@ from __future__ import print_function
 
 import os
 import sys
+import traceback
 import shutil
 import argparse
 import subprocess
@@ -28,9 +29,8 @@ def err(message=""):
 # make sure nbt module is installed
 try:
     from nbt import nbt
-except ImportError:
-    err("Couldn't import module: nbt")
-    err()
+except ImportError as e:
+    print(traceback.format_exc())
     err("Make sure you followed the install procedure:")
     err("\thttps://github.com/dmbuce/mcexplore#install")
     sys.exit(1)
@@ -39,7 +39,7 @@ def getParser():
 
     # set some vars
     prog = "mcexplore"
-    version = f'{prog} 2.125.g67748a2+1'
+    version = f'{prog} 2.134.gab4e134+1'
     description = "Use a minecraft server jar to generate a rectangular section of the world."
 
     # parse args
