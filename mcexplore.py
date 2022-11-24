@@ -147,12 +147,12 @@ def main():
         err()
         err("The area to generate must be 2x2 regions or larger.")
         sys.exit(1)
-    elif xsize <= 25:
+    elif not args.regions and xsize <= 25:
         err("xsize too small: %s" % xsize)
         err()
         err("The area to generate must be 26x26 chunks or larger.")
         sys.exit(1)
-    elif zsize <= 25:
+    elif not args.regions and zsize <= 25:
         err("zsize too small: %s" % zsize)
         err()
         err("The area to generate must be 26x26 chunks or larger.")
@@ -372,4 +372,3 @@ def checkEulaAccepted(eula):
 
 if __name__ == "__main__":
     main()
-
